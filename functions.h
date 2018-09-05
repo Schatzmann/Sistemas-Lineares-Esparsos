@@ -10,9 +10,10 @@ Eduardo Zimermam Pereira      GRR20152952  */
 
 
 double  jacobi (int dim);
+
 /* 
 double  jacobi (double  *A, double *B,  double *X,  int n, double *tIteracao, double *tTotal);
-sem_PreCondicionador;
-com_PreCondicionador;*/
+double sem_préCondicionador(double  *A, double *b, double *MaxIt, double eps);
+ouble com_préCondicionador(double  *A, double *b, double *M, double *MaxIt, double eps){
 
 #endif
