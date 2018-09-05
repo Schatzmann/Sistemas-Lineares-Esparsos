@@ -6,19 +6,24 @@ Eduardo Zimermam Pereira      GRR20152952  */
 //#define EPS
 
 
+double  jacobi (int dim){
+
+	printf("Entrou Jacobi %d\n",dim);
+}
+
+
+
 
 int main(int argc, char **argv){
- int dim,k,i;
- float w,eps;
+ int dim, k, intr;
+ float w, eps;
  char *arqSaida;
+ double *A;
 
- char *ret;
- char ch = 'n';
-
-
- dim = atoi(argv[2]);
- k = atoi(argv[4]);
- w = atof(argv[6]);
+ dim = atoi(argv[2]);     // dimensão do Sistema Linear
+ k = atoi(argv[4]);				// número de diagonais da matriz A
+ w = atof(argv[6]);				// pré-condicionador a ser utilizado
+ intr = atoi(argv[8]);    // número máximo de iterações a serem executadas
 
 	if (dim < 10){
  		printf("O valor da dimensão do Sistema Linear tem que ser maior que 10.\n");
@@ -29,36 +34,27 @@ int main(int argc, char **argv){
  	}
 
 
+ 	if (w == 0.0){
+ 		//  sem pré-condicionador
+ 		printf("SEM pré-condicionador\n");
+ 	}
+ 	else{
+ 		if((w > 0.0)&&(w < 1.0)){
+			//pré-condicionador de Jacobi
+			jacobi(dim);
+ 		}
+ 	}
 
-
- printf("%f\n", w);
- 	
-	
-
-	if(strcmp(argv[9], "-e")){
- 		// eps = double(argv[10]);
+ 	if(!strcmp(argv[9], "-e")){
+ 		eps = atof(argv[10]);
  		arqSaida = argv[12];
  	}
  	else
  		arqSaida = argv[10];
 
 
-/*
- cgSolver -n <n> -k <k> -p <ω> -i <i> -e <ε> -o <arquivo_saida> */
-	 	
-
-
+ 	A = (double*)malloc(dim*dim*sizeof(double));  // matriz de coeficientes
 
  return(0);	
 }
-/*
 
-<n>: (n>10) parâmetro obrigatório definindo a dimensão do Sistema Linear.
-<k>: (k>1 e k ímpar)  parâmetro obrigatório definindo o número de diagonais da matriz A.
-<ω>:  parâmetro obrigatório indicando o pré-condicionador a ser utilizado:
-ω=0.0: sem pré-condicionador
-0.0 < ω < 1.0: pré-condicionador de Jacobi
-
-
-<i>: parâmetro obrigatório definindo o número máximo de iterações a serem executadas.
-<arquivo_saida>: parâmetro obrigatório no qual arquivo_saida é o caminho completo para o arquivo que vai conter a solução.*/

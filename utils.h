@@ -1,3 +1,6 @@
+/*Annelyse Schatzmann           GRR20151731
+Eduardo Zimermam Pereira      GRR20152952  */
+
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
@@ -6,5 +9,5 @@
 
 double timestamp(void);
 
-#endif // __UTILS_H__
+#endif
 
