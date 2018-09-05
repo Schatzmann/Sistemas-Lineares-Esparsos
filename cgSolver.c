@@ -2,7 +2,7 @@
 Annelyse Schatzmann           GRR20151731
 Eduardo Zimermam Pereira      GRR20152952  */
 
-#include "cgSolver.h"
+#include "functions.h"
 //#define EPS
 
 
