@@ -10,6 +10,8 @@ Eduardo Zimermam Pereira      GRR20152952  */
 
 
 double  jacobi (int dim);
+double gradienteConjugado(double**, double*, int, double);
+double** alocaMatriz(int, int);
 
 /* 
 double  jacobi (double  *A, double *B,  double *X,  int n, double *tIteracao, double *tTotal);
