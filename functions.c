@@ -8,6 +8,38 @@ Eduardo Zimermam Pereira      GRR20152952  */
 #include <string.h>
 #include "functions.h"
 
+double** alocaMatriz(int linhas, int colunas){
+	double **matriz;
+
+	matriz = (double**) malloc((linhas*colunas) * sizeof(double));
+
+	for(int i = 0; i < linhas; i++){
+		matriz[i] = matriz[i * linhas];
+	}
+
+	return matriz;
+}
+
+
+double multiplica_matriz(){
+ int i, j, k, linA, colA, linB, colB;
+
+	for(i= 0; i < linA; i++){
+		for(j= 0; j < colB; j++){
+			matrizC[i][j]=0;
+			for(k= 0; k < colA; k++){          //colA = linB
+				aux += (matrizA[i][k] * matrizB[k][j]);
+	    }
+	    matrizC[i][j]= aux;
+	    aux= 0;
+		}
+	}
+
+	return(matrizC)
+}
+
+
+
 double sem_préCondicionador(double  *A, double *b, double *MaxIt, double eps){
  
 	double r = b; v = b;
@@ -72,19 +104,10 @@ double com_préCondicionador(double  *A, double *b, double *M, double *MaxIt, do
 	}
 
 
-double** alocaMatriz(int linhas, int colunas){
-	double **matriz;
-
-	matriz = (double**) malloc((linhas*colunas) * sizeof(double));
-
-	for(int i = 0; i < linhas; i++){
-		matriz[i] = matriz[i * linhas];
-	}
-
-	return matriz;
-}
 
 double gradienteConjugado(double **matriz, double *b, int maxIt, double eps){
 
 
 }
+
+

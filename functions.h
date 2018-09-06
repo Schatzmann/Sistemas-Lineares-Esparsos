@@ -9,9 +9,12 @@ Eduardo Zimermam Pereira      GRR20152952  */
 #include <string.h>
 
 
+double** alocaMatriz(int, int);
+double multiplica_matriz();
 double  jacobi (int dim);
 double gradienteConjugado(double**, double*, int, double);
-double** alocaMatriz(int, int);
+
+
 
 /* 
 double  jacobi (double  *A, double *B,  double *X,  int n, double *tIteracao, double *tTotal);
