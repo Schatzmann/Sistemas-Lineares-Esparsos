@@ -40,30 +40,33 @@ double multiplica_matriz(){
 
 
 
-double sem_préCondicionador(double  *A, double *b, double *MaxIt, double eps){
+double sem_préCondicionador(double  *A:matriz, double *b:vetor, double *MaxIt, double eps){
  
 	double r = b; v = b;
-	double aux =
+	double aux = produtoInterno_vetor(r,r);
+	X = 0;
 
 	for(int itr= 0; itr < MaxIt; itr++){
-		z = multiplica_matriz(A, v);
-		vT = transposta(v);
-		multi_aux =  multiplica_matriz(vT, z);
-		s = aux / multi_aux;
+		z = multiplica_matriz_vetor(A, v);
+		escalar =  produtoInterno_vetor(v, z);
+		double s = aux / escalar;
 
-		multi_aux = multiplica_matriz (s, v);
-			FALTA!
+		vetor = multiplica_escalarVetor (s, v);
+		X = soma_vetor(X, vetor);
 
-		r = r + multiplica_matriz(s,z);
-		rT = transposta(r);
-		aux1 = multiplica_matriz(rT,r);
+		vetor = multiplica_escalarVetor(s, z);
+		r = subtrai_Vetor(r, vetor);
+		aux1 = produtoInterno_vetor(r,r);
+
 		if(aux1 < eps){
 			return(x)
 		}
 
-		m = aux1/aux ;
+		m = aux1/aux;
 		aux = aux1;
-		v = r + (multiplica_matriz(m,v))
+
+		vetor = multiplica_escalarVetor(m, v);
+		v = soma_Vetor(r, vetor);
 	}
 }
 
@@ -73,20 +76,18 @@ double com_préCondicionador(double  *A, double *b, double *M, double *MaxIt, do
 	double r = b; v = b;
 	X = 0;
 	MI = inversa(M);
-	v = multiplica_matriz(MI,b);	
-	y = multiplica_matriz(MI, r);
-	yT = transposta(y);
-	aux = multiplica_matriz (yT,r);
+	v = multiplica_matriz_vetor(MI, b);	
+	y = multiplica_matriz_vetor(MI, r);
+	aux = multiplica_vetor(y,r);
 
 	for(int itr= 0; itr < MaxIt; itr++){
-		z = multiplica_matriz(A, v);
-		vT = transposta(v);
-		multi_aux =  multiplica_matriz(vT, z);
-		multi_aux = inversa(multi_aux);
-		s = multiplica_matriz(aux, multi_aux);
+		z = multiplica_matriz_vetor(A, v);
+		
+		double multi_aux =  multiplica_vetor(v, z);
+		s = aux / multi_aux;
 		
 		multi_aux = multiplica_matriz(s, v);
-			X = (X + multi_aux);
+		X = (X + multi_aux);
 
 
 		r = r - multiplica_matriz(s, z);
@@ -97,7 +98,7 @@ double com_préCondicionador(double  *A, double *b, double *M, double *MaxIt, do
 		if(multi_aux < eps){
 			return(x)
 		}
-		
+
 		yT = transposta(y);
 		aux1 = multiplica_matriz(yT, r);
 		m = aux1/aux ;
