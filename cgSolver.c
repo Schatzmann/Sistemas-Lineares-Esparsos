@@ -52,9 +52,6 @@ int main(int argc, char **argv){
  	else
  		arqSaida = argv[10];
 
-
- 	A = (double*)malloc(dim*dim*sizeof(double));  // matriz de coeficientes
-
  return(0);	
 }
 

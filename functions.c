@@ -82,10 +82,11 @@ double com_préCondicionador(double  *A, double *b, double *M, double *MaxIt, do
 		z = multiplica_matriz(A, v);
 		vT = transposta(v);
 		multi_aux =  multiplica_matriz(vT, z);
-		s = aux / multi_aux;
+		multi_aux = inversa(multi_aux);
+		s = multiplica_matriz(aux, multi_aux);
 		
-		multi_aux = multiplica_matriz (s, v);
-			FALTA!
+		multi_aux = multiplica_matriz(s, v);
+			X = (X + multi_aux);
 
 
 		r = r - multiplica_matriz(s, z);
@@ -96,6 +97,7 @@ double com_préCondicionador(double  *A, double *b, double *M, double *MaxIt, do
 		if(multi_aux < eps){
 			return(x)
 		}
+		
 		yT = transposta(y);
 		aux1 = multiplica_matriz(yT, r);
 		m = aux1/aux ;
