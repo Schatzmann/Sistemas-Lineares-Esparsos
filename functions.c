@@ -21,41 +21,87 @@ double** alocaMatriz(int linhas, int colunas){
 }
 
 
-double multiplica_matriz(){
- int i, j, k, linA, colA, linB, colB;
+double* alocaVetor(int tamVetor){
+	
+	double *vetorSaida = malloc(tamVetor * sizeof(double));
 
-	for(i= 0; i < linA; i++){
-		for(j= 0; j < colB; j++){
-			matrizC[i][j]=0;
-			for(k= 0; k < colA; k++){          //colA = linB
-				aux += (matrizA[i][k] * matrizB[k][j]);
-	    }
-	    matrizC[i][j]= aux;
-	    aux= 0;
-		}
+ return(vetorSaida);
+}
+
+double* copiaVetor(double* vetorA, int tamVetor){
+	double* aux = alocaVetor(tamVetor);
+
+	for (int i = 0; i < tamVetor; ++i){
+		aux[i] = vetorA[i];
 	}
 
-	return(matrizC)
+	return(aux);
+}
+
+double produtoInterno_vetor(double *vetorA, double *vetorB, int tamVetor){
+ double escalar;
+
+  for(int i=0; i<tamVetor; i++){
+ 		escalar += (vetorA[i] * vetorB[i]);
+ 	}
+
+ return(escalar);
+}
+
+double* multiplica_escalarVetor(double *vetorA, double escalar, int tamVetor, double *vetorSaida){
+   
+  for(int i=0; i<tamVetor; i++){
+ 		vetorSaida[i]= (vetorA[i] * escalar);
+ 	}
+}
+
+double* soma_vetor(double *vetorA, double *vetorB, int tamVetor, double *vetorSaida){
+ 
+  for(int i=0; i<tamVetor; i++){
+ 		vetorSaida[i]= (vetorA[i] + vetorB[i]);
+ 	}
+}
+
+double* subtrai_vetor(double *vetorA, double *vetorB, int tamVetor, double *vetorSaida){
+ 
+  for(int i=0; i<tamVetor; i++){
+ 		vetorSaida[i]= (vetorA[i] - vetorB[i]);
+ 	}
 }
 
 
-
-double sem_préCondicionador(double  *A:matriz, double *b:vetor, double *MaxIt, double eps){
+double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, double *vetorSaida){
  
-	double r = b; v = b;
+  for(int i=0; i<tamVetor; i++){
+  	for(int j=0; j<tamVetor; j++){
+  		vetorSaida[i]+= (matriz[i][j] * vetorA[j]);
+  	}
+  }
+}
+
+
+double gradienteConjugado(double **matriz, double *vetor, double *MaxIt, double eps, int tamVetor){
+	double *X, *z, *r, *v;
+
+  X = alocaVetor(tamVetor);
+	z = alocaVetor(tamVetor);
+
+	r = copiaVetor(vetor, tamVetor);
+	v = copiaVetor(vetor, tamVetor);
+	double aux1;
 	double aux = produtoInterno_vetor(r,r);
-	X = 0;
+	
 
 	for(int itr= 0; itr < MaxIt; itr++){
-		z = multiplica_matriz_vetor(A, v);
+		z[é vetor]= multiplica_matriz_vetor(matriz, v);
 		escalar =  produtoInterno_vetor(v, z);
 		double s = aux / escalar;
 
-		vetor = multiplica_escalarVetor (s, v);
-		X = soma_vetor(X, vetor);
+		vetor = multiplica_escalarVetor(s, v);
+		X[é vetor]= soma_vetor(X, vetor);
 
 		vetor = multiplica_escalarVetor(s, z);
-		r = subtrai_Vetor(r, vetor);
+		r = subtrai_vetor(r, vetor);
 		aux1 = produtoInterno_vetor(r,r);
 
 		if(aux1 < eps){
@@ -71,7 +117,7 @@ double sem_préCondicionador(double  *A:matriz, double *b:vetor, double *MaxIt, 
 }
 
 
-double com_préCondicionador(double  *A, double *b, double *M, double *MaxIt, double eps){
+double gradConj_comPreCondicionador(double **matriz, double *vetor, double *MaxIt, double eps){
  
 	double r = b; v = b;
 	X = 0;
@@ -105,12 +151,5 @@ double com_préCondicionador(double  *A, double *b, double *M, double *MaxIt, do
 		aux = aux1;
 		v = y + (multiplica_matriz(m, v));
 	}
-
-
-
-double gradienteConjugado(double **matriz, double *b, int maxIt, double eps){
-
-
-}
 
 

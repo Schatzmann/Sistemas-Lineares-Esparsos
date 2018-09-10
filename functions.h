@@ -10,15 +10,16 @@ Eduardo Zimermam Pereira      GRR20152952  */
 
 
 double** alocaMatriz(int, int);
-double multiplica_matriz();
-double  jacobi (int dim);
-double gradienteConjugado(double**, double*, int, double);
+double* alocaVetor(int);
+double* copiaVetor(double*, int)
+double produtoInterno_vetor(double*, double*, int);
+double* multiplica_escalarVetor(double*, double, int, double*);
+double* soma_vetor(double*, double*, int, double*);
+double* subtrai_vetor(double*, double*, int, double*);
+double* multiplica_matriz_vetor(double**, double*, int, double*);
 
+double gradienteConjugado(double**, double*, double*, double);
+double gradConj_comPreCondicionador(double**, double*, double*, double);
 
-
-/* 
-double  jacobi (double  *A, double *B,  double *X,  int n, double *tIteracao, double *tTotal);
-double sem_préCondicionador(double  *A, double *b, double *MaxIt, double eps);
-ouble com_préCondicionador(double  *A, double *b, double *M, double *MaxIt, double eps){
 
 #endif
