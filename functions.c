@@ -44,9 +44,9 @@ double* alocaVetor(int tamVetor){
 }
 
 double* copiaVetor(double* vetorA, int tamVetor){
-	double* aux = alocaVetor(tamVetor);
+	double* aux;
 
-	//aux -> vetorA;
+	aux = vetorA;
 
 	return(aux);
 }
@@ -92,66 +92,82 @@ double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, d
   }
 }
 
-// double gradConj_comPreCondicionador(double **matriz, double *vetor, double *MaxIt, double eps){
-//
-// 	double r = b; v = b;
-// 	X = 0;
-// 	MI = inversa(M);
-// 	v = multiplica_matriz_vetor(MI, b);
-// 	y = multiplica_matriz_vetor(MI, r);
-// 	aux = multiplica_vetor(y,r);
-//
-// 	for(int itr= 0; itr < MaxIt; itr++){
-// 		z = multiplica_matriz_vetor(A, v);
-//
-// 		double multi_aux =  multiplica_vetor(v, z);
-// 		s = aux / multi_aux;
-//
-// 		multi_aux = multiplica_matriz(s, v);
-// 		X = (X + multi_aux);
-//
-//
-// 		r = r - multiplica_matriz(s, z);
-// 		y = multiplica_matriz(MI, r);
-// 		rT = transposta(r);
-// 		multi_aux = multiplica_matriz(rT, r);
-//
-// 		if(multi_aux < eps){
-// 			return(x)
-// 		}
-//
-// 		yT = transposta(y);
-// 		aux1 = multiplica_matriz(yT, r);
-// 		m = aux1/aux ;
-// 		aux = aux1;
-// 		v = y + (multiplica_matriz(m, v));
-// 	}
-// }
+double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double eps, int tamVetor){
+	double *X, *z, *r, *v, *vet_aux, escalar, aux1;
 
-// double gradienteConjugado(double **matriz, double *vetor, double *MaxIt, double eps, int tamVetor){
-// 	double *X, *z, *r, *v;
-//   X = alocaVetor(tamVetor);
-// 	z = alocaVetor(tamVetor);
-// 	r = copiaVetor(vetor, tamVetor);
-// 	v = copiaVetor(vetor, tamVetor);
-// 	double aux1;
-// 	double aux = produtoInterno_vetor(r,r);
-//
-// 	for(int itr= 0; itr < MaxIt; itr++){
-// 		z[é vetor]= multiplica_matriz_vetor(matriz, v);
-// 		escalar =  produtoInterno_vetor(v, z);
-// 		double s = aux / escalar;
-// 		vetor = multiplica_escalarVetor(s, v);
-// 		X[é vetor]= soma_vetor(X, vetor);
-// 		vetor = multiplica_escalarVetor(s, z);
-// 		r = subtrai_vetor(r, vetor);
-// 		aux1 = produtoInterno_vetor(r,r);
-// 		if(aux1 < eps){
-// 			return(x)
-// 		}
-// 		m = aux1/aux;
-// 		aux = aux1;
-// 		vetor = multiplica_escalarVetor(m, v);
-// 		v = soma_Vetor(r, vetor);
-// 	}
-// }
+  X = alocaVetor(tamVetor);
+	z = alocaVetor(tamVetor);
+	vet_aux = alocaVetor(tamVetor);
+
+	r = copiaVetor(vetor, tamVetor);
+	v = copiaVetor(vetor, tamVetor);
+	
+	double aux = produtoInterno_vetor(r, r, tamVetor);
+	
+
+	for(int itr = 0; itr < MaxIt; itr++){
+		multiplica_matriz_vetor(matriz, v, tamVetor, z);
+		escalar = produtoInterno_vetor(v, z, tamVetor);
+		double s = aux / escalar;
+
+		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
+		soma_vetor(X, vet_aux, tamVetor, X);
+
+		multiplica_escalarVetor(z, s, tamVetor, vet_aux);
+		subtrai_vetor(r, vet_aux, tamVetor, r);
+		aux1 = produtoInterno_vetor(r, r, tamVetor);
+
+		if(aux1 < eps){
+			return(X);	
+		}
+
+		double m = aux1/aux;
+		aux = aux1;
+
+		multiplica_escalarVetor(v, m, tamVetor, vet_aux);
+		soma_vetor(r, vet_aux, tamVetor, v);
+	}
+}
+
+
+double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M, double MaxIt, double eps, int tamVetor){
+	double *X, *y, *z, *r, *v, *vet_aux, escalar, aux1;
+
+  X = alocaVetor(tamVetor);
+  v = alocaVetor(tamVetor);
+  y = alocaVetor(tamVetor);
+	z = alocaVetor(tamVetor);
+	vet_aux = alocaVetor(tamVetor);
+
+	r = copiaVetor(vetor, tamVetor);
+	multiplica_matriz_vetor(M, vetor, tamVetor, v);  /* v = (M*b) */
+	multiplica_matriz_vetor(M, r, tamVetor, y);			/* y = (M*r) */
+	
+	double aux = produtoInterno_vetor(y, r, tamVetor);
+	
+	for(int itr = 0; itr < MaxIt; itr++){
+		multiplica_matriz_vetor(matriz, v, tamVetor, z);
+		escalar = produtoInterno_vetor(v, z, tamVetor);
+		double s = aux / escalar;
+
+		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
+		soma_vetor(X, vet_aux, tamVetor, X);
+
+		multiplica_escalarVetor(z, s, tamVetor, vet_aux);
+		subtrai_vetor(r, vet_aux, tamVetor, r);
+
+		multiplica_matriz_vetor(M, r, tamVetor, y);			/* y = (M*r) */
+			
+		if((produtoInterno_vetor(r, r, tamVetor)) < eps){
+			return(X);	
+		}
+
+		aux1 = produtoInterno_vetor(y, r, tamVetor);
+
+		double m = aux1 / aux;
+		aux = aux1;
+
+		multiplica_escalarVetor(v, m, tamVetor, vet_aux);
+		soma_vetor(y, vet_aux, tamVetor, v);
+	}
+}
