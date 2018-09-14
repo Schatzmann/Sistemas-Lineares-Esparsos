@@ -10,15 +10,16 @@ Eduardo Zimermam Pereira      GRR20152952  */
 
 
 double** alocaMatriz(int, int);
+void printMatriz(double** , int , int);
 double* alocaVetor(int);
-double* copiaVetor(double*, int)
+double* copiaVetor(double*, int);
 double produtoInterno_vetor(double*, double*, int);
 double* multiplica_escalarVetor(double*, double, int, double*);
 double* soma_vetor(double*, double*, int, double*);
 double* subtrai_vetor(double*, double*, int, double*);
 double* multiplica_matriz_vetor(double**, double*, int, double*);
 
-double gradienteConjugado(double**, double*, double*, double);
+double gradienteConjugado(double**, double*, double*, double, int);
 double gradConj_comPreCondicionador(double**, double*, double*, double);
 
 
