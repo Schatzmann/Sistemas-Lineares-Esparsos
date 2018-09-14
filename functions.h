@@ -20,8 +20,7 @@ double* subtrai_vetor(double*, double*, int, double*);
 double* multiplica_matriz_vetor(double**, double*, int, double*);
 
 double** preCond_Jacobi(double**, int, int);
-double gradienteConjugado(double**, double*, double*, double, int);
-double gradConj_comPreCondicionador(double**, double*, double*, double);
-
+double* gradienteConjugado(double**, double*, double, double, int);
+double* gradConj_comPreCondicionador(double**, double*, double**, double, double, int);
 
 #endif
