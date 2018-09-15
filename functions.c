@@ -126,12 +126,10 @@ double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double 
 
 	double aux = produtoInterno_vetor(r, r, tamVetor);
 
-
 	for(int itr = 0; itr < MaxIt; itr++){
 		multiplica_matriz_vetor(matriz, v, tamVetor, z);
 		escalar = produtoInterno_vetor(v, z, tamVetor);
 		double s = aux / escalar;
-		printf("%.15g\n", s);
 		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
 		soma_vetor(X, vet_aux, tamVetor, X);
 
@@ -142,6 +140,8 @@ double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double 
 			aux1 += r[i];
 		}
 
+		aux1 = fabs(aux1);
+
 		aux1 = sqrt(aux1);
 
 		if(aux1 < eps){
@@ -151,7 +151,6 @@ double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double 
 		double m = aux1/aux;
 		aux = aux1;
 
-		
 		multiplica_escalarVetor(v, m, tamVetor, vet_aux);
 		soma_vetor(r, vet_aux, tamVetor, v);
 	}
