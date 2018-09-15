@@ -19,6 +19,7 @@ double* soma_vetor(double*, double*, int, double*);
 double* subtrai_vetor(double*, double*, int, double*);
 double* multiplica_matriz_vetor(double**, double*, int, double*);
 double** geraMatrizA(int, int);
+double* geraB(int, int);
 
 double** preCond_Jacobi(double**, int, int);
 double* gradienteConjugado(double**, double*, double, double, int);
