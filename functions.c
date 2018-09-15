@@ -137,7 +137,7 @@ double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double 
 
 		multiplica_matriz_vetor(matriz, X, tamVetor, vet_aux);
 		subtrai_vetor(vetor, vet_aux, tamVetor, r);
-		
+
 		for(int i = 0; i < tamVetor; i++){
 			aux1 += r[i];
 		}
@@ -203,7 +203,7 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 
 		multiplica_matriz_vetor(matriz, X, tamVetor, vet_aux);
 		subtrai_vetor(vetor, vet_aux, tamVetor, r);
-		
+
 		multiplica_matriz_vetor(M, r, tamVetor, y);			/* y = (M*r) */
 
 		for(int i = 0; i < tamVetor; i++){
@@ -227,7 +227,6 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 }
 
 double** geraMatrizA(int k_diag, int dim){
-		srand(20182);
 		double** matriz = alocaMatriz(dim, dim);
 		int divK = k_diag / 2;
 
@@ -240,4 +239,16 @@ double** geraMatrizA(int k_diag, int dim){
 		}
 
 		return matriz;
+}
+
+double* geraB(int k_diag, int dim){
+	double* vetorB;
+
+	vetorB = (double*) malloc(dim * sizeof(double));
+
+	for (int i = 0; i < dim; i++) {
+		vetorB[i] = generateRandomB(k_diag);
+	}
+
+	return vetorB;
 }
