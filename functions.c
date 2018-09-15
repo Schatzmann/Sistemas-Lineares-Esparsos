@@ -8,6 +8,7 @@ Eduardo Zimermam Pereira      GRR20152952  */
 #include <string.h>
 #include <math.h>
 #include "functions.h"
+#include <string.h>
 
 /***********************
  * Função que gera os coeficientes de um sistema linear k-diagonal
@@ -125,10 +126,12 @@ double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double 
 
 	double aux = produtoInterno_vetor(r, r, tamVetor);
 
+
 	for(int itr = 0; itr < MaxIt; itr++){
 		multiplica_matriz_vetor(matriz, v, tamVetor, z);
 		escalar = produtoInterno_vetor(v, z, tamVetor);
 		double s = aux / escalar;
+		printf("%.15g\n", s);
 		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
 		soma_vetor(X, vet_aux, tamVetor, X);
 
@@ -147,8 +150,8 @@ double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double 
 
 		double m = aux1/aux;
 		aux = aux1;
-		printf("%lf\n", aux);
 
+		
 		multiplica_escalarVetor(v, m, tamVetor, vet_aux);
 		soma_vetor(r, vet_aux, tamVetor, v);
 	}
