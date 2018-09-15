@@ -1,14 +1,18 @@
-CC = gcc -g
+CC = gcc
 
-objs = cgSolver.o
+CFLAGS = -lm
+
+objs = cgSolver.o functions.o
 
 all: cgSolver
 
-cgSolver: $(objs)
+cgSolver: $(objs) $(CFLAGS)
 
-cgSolver.o: cgSolver.c functions.h utils.h
+cgSolver.o: cgSolver.c functions.o utils.h
 
-clean: 
+functions.o: functions.c
+
+clean:
 	-rm -f $(objs) *~
 
 purge: clean
