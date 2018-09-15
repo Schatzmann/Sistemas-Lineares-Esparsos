@@ -116,7 +116,7 @@ double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, d
 double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double eps, int tamVetor){
 	double *X, *z, *r, *v, *vet_aux, escalar, aux1;
 
-  X = alocaVetor(tamVetor);
+	X = alocaVetor(tamVetor);
 	z = alocaVetor(tamVetor);
 	vet_aux = alocaVetor(tamVetor);
 
@@ -125,18 +125,21 @@ double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double 
 
 	double aux = produtoInterno_vetor(r, r, tamVetor);
 
-
 	for(int itr = 0; itr < MaxIt; itr++){
 		multiplica_matriz_vetor(matriz, v, tamVetor, z);
 		escalar = produtoInterno_vetor(v, z, tamVetor);
 		double s = aux / escalar;
-
 		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
 		soma_vetor(X, vet_aux, tamVetor, X);
 
-		multiplica_escalarVetor(z, s, tamVetor, vet_aux);
-		subtrai_vetor(r, vet_aux, tamVetor, r);
-		aux1 = produtoInterno_vetor(r, r, tamVetor);
+		multiplica_matriz_vetor(matriz, X, tamVetor, vet_aux);
+		subtrai_vetor(vetor, vet_aux, tamVetor, r);
+		
+		for(int i = 0; i < tamVetor; i++){
+			aux1 += r[i];
+		}
+
+		aux1 = sqrt(aux1);
 
 		if(aux1 < eps){
 			return(X);
@@ -144,6 +147,7 @@ double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double 
 
 		double m = aux1/aux;
 		aux = aux1;
+		printf("%lf\n", aux);
 
 		multiplica_escalarVetor(v, m, tamVetor, vet_aux);
 		soma_vetor(r, vet_aux, tamVetor, v);
@@ -194,12 +198,18 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
 		soma_vetor(X, vet_aux, tamVetor, X);
 
-		multiplica_escalarVetor(z, s, tamVetor, vet_aux);
-		subtrai_vetor(r, vet_aux, tamVetor, r);
-
+		multiplica_matriz_vetor(matriz, X, tamVetor, vet_aux);
+		subtrai_vetor(vetor, vet_aux, tamVetor, r);
+		
 		multiplica_matriz_vetor(M, r, tamVetor, y);			/* y = (M*r) */
 
-		if((produtoInterno_vetor(r, r, tamVetor)) < eps){
+		for(int i = 0; i < tamVetor; i++){
+			aux1 += r[i];
+		}
+
+		aux1 = sqrt(aux1);
+
+		if(aux1 < eps){
 			return(X);
 		}
 
