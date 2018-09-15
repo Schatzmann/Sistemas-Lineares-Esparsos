@@ -6,14 +6,36 @@ Eduardo Zimermam Pereira      GRR20152952  */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "functions.h"
+
+/***********************
+ * Função que gera os coeficientes de um sistema linear k-diagonal
+ * i,j: coordenadas do elemento a ser calculado (0<=i,j<n)
+ * k: numero de diagonais da matriz A
+ ***********************/
+inline double generateRandomA( unsigned int i, unsigned int j, unsigned int k){
+  static double invRandMax = 1.0 / (double)RAND_MAX;
+  return ( (i==j)?(double)(k<<1) : 1.0 )  * (double)rand() * invRandMax;
+}
+
+/***********************
+ * Função que gera os termos independentes de um sistema linear k-diagonal
+ * k: numero de diagonais da matriz A
+ ***********************/
+inline double generateRandomB( unsigned int k )
+{
+  static double invRandMax = 1.0 / (double)RAND_MAX;
+  return (double)(k<<2) * (double)rand() * invRandMax;
+}
+
 
 double** alocaMatriz(int linhas, int colunas){
 	double **matriz;
 
 	matriz = (double**) malloc(linhas * sizeof(double*));
 
-	for(int i = 1; i <= linhas; i++){
+	for(int i = 0; i < linhas; i++){
 			matriz[i] = (double*) malloc(colunas * sizeof(double));
 	}
 
@@ -189,4 +211,20 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 		multiplica_escalarVetor(v, m, tamVetor, vet_aux);
 		soma_vetor(y, vet_aux, tamVetor, v);
 	}
+}
+
+double** geraMatrizA(int k_diag, int dim){
+		srand(20182);
+		double** matriz = alocaMatriz(dim, dim);
+		int divK = k_diag / 2;
+
+		for (int i = 0; i < dim; i++) {
+				for (int j = 0; j < dim; j++) {
+					if(fabs(i-j) <= divK){
+							matriz[i][j] = generateRandomA(i, j, k_diag);
+					}
+				}
+		}
+
+		return matriz;
 }

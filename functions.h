@@ -18,9 +18,14 @@ double* multiplica_escalarVetor(double*, double, int, double*);
 double* soma_vetor(double*, double*, int, double*);
 double* subtrai_vetor(double*, double*, int, double*);
 double* multiplica_matriz_vetor(double**, double*, int, double*);
+double** geraMatrizA(int, int);
 
 double** preCond_Jacobi(double**, int, int);
 double* gradienteConjugado(double**, double*, double, double, int);
 double* gradConj_comPreCondicionador(double**, double*, double**, double, double, int);
+
+
+extern inline double generateRandomA(unsigned int, unsigned int, unsigned int);
+extern inline double generateRandomB( unsigned int );
 
 #endif
