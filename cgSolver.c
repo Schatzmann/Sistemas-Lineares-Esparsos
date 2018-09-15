@@ -8,11 +8,14 @@ int main(int argc, char **argv){
  int dim, k, intr;
  float w, eps;
  char *arqSaida;
- 
+
  dim = atoi(argv[2]);     // dimensão do Sistema Linear
  k = atoi(argv[4]);				// número de diagonais da matriz A
  w = atof(argv[6]);				// pré-condicionador a ser utilizado
  intr = atoi(argv[8]);    // número máximo de iterações a serem executadas
+
+	double vetor[5] = {3, 8, 7, 9, 18};
+  double **matriz = alocaMatriz(dim,dim);
 
 	if (dim < 10){
  		printf("O valor da dimensão do Sistema Linear tem que ser maior que 10.\n");
@@ -36,7 +39,7 @@ int main(int argc, char **argv){
  	}
  	else{
  		if((w > 0.0)&&(w < 1.0)){
-	/*		M = preCond_Jacobi(**matriz, dim, dim);
+	/*	M = preCond_Jacobi(**matriz, dim, dim);
 			gradConj_comPreCondicionador(**matriz, *vetor, **M, intr, eps, dim);*/
  		}
  	}
