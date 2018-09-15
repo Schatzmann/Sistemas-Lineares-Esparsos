@@ -3,23 +3,12 @@ Annelyse Schatzmann           GRR20151731
 Eduardo Zimermam Pereira      GRR20152952  */
 
 #include "functions.h"
-//#define EPS
-
-
-double  jacobi (int dim){
-
-	printf("Entrou Jacobi %d\n",dim);
-}
-
-
-
 
 int main(int argc, char **argv){
  int dim, k, intr;
  float w, eps;
  char *arqSaida;
- double *A;
-
+ 
  dim = atoi(argv[2]);     // dimensão do Sistema Linear
  k = atoi(argv[4]);				// número de diagonais da matriz A
  w = atof(argv[6]);				// pré-condicionador a ser utilizado
@@ -33,25 +22,25 @@ int main(int argc, char **argv){
  		printf("O número de diagonais da matriz A tem que ser maior que 1 e ímpar.\n");
  	}
 
-
- 	if (w == 0.0){
- 		//  sem pré-condicionador
- 		printf("SEM pré-condicionador\n");
- 	}
- 	else{
- 		if((w > 0.0)&&(w < 1.0)){
-			//pré-condicionador de Jacobi
-			jacobi(dim);
- 		}
- 	}
-
  	if(!strcmp(argv[9], "-e")){
  		eps = atof(argv[10]);
  		arqSaida = argv[12];
  	}
- 	else
+ 	else{
+ 		eps = 100;
  		arqSaida = argv[10];
+ 	}
+
+ 	if (w == 0.0){
+ 		gradienteConjugado(matriz, vetor, intr, eps, dim);
+ 	}
+ 	else{
+ 		if((w > 0.0)&&(w < 1.0)){
+	/*		M = preCond_Jacobi(**matriz, dim, dim);
+			gradConj_comPreCondicionador(**matriz, *vetor, **M, intr, eps, dim);*/
+ 		}
+ 	}
+
 
  return(0);	
 }
-
