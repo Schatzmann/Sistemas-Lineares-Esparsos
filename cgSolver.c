@@ -7,26 +7,35 @@ Eduardo Zimermam Pereira      GRR20152952  */
 int main(int argc, char **argv){
 	srand(20182);
 
- 	int dim, diag, maxIt, error;
- 	double tipo, eps;
+ 	int dim, diag, maxIt, error, contIter;
+ 	double tipo, eps, *iterX, tempoResiduo, tempoIteracao, tempoPC, residuo;
  	char arqSaida[256];
+
 
  	error = getLinhaComando(&dim, &diag, &tipo, &maxIt, &eps, arqSaida, argc, argv);
 
+
 	if(error != -1){ 	
- 		// double **matriz = geraMatrizA(diag, dim);
- 		// double *vetor = geraB(diag, dim);
 
- 		// if (tipo == 0.0){
- 		// 	gradienteConjugado(matriz, vetor, maxIt, eps, dim);
- 		// } else{
- 		// 	if((tipo > 0.0)&&(tipo < 1.0)){
-			// 	/*M = preCond_Jacobi(**matriz, dim, dim);
-			// 	gradConj_comPreCondicionador(**matriz, *vetor, **M, maxIt, eps, dim);*/
-			// }
- 		// }
+		double **matriz = geraMatrizA(diag, dim);
+ 		double *vetor = geraB(diag, dim);
 
-	 	return(0);	
+ 		tempoPC = timestamp();
+
+ 		if (tipo == 0.0){
+ 			gradienteConjugado(matriz, vetor, maxIt, eps, dim, &contIter, iterX, &tempoResiduo, &tempoIteracao, &residuo);
+ 		} else{
+ 			if((tipo > 0.0)&&(tipo < 1.0)){
+				double** M = preCond_Jacobi(matriz, dim, dim);
+				gradConj_comPreCondicionador(matriz, vetor, M, maxIt, eps, dim, &contIter, iterX, &tempoResiduo, &tempoIteracao);
+			}
+ 		}
+
+ 		tempoPC = fabs(timestamp() - tempoPC);
+
+ 		escreveSaida(arqSaida, dim, vetor, residuo, tempoPC, tempoIteracao, tempoResiduo);
+
+		return(0);	
 	
 	} else {
 	

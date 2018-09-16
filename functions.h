@@ -7,6 +7,8 @@ Eduardo Zimermam Pereira      GRR20152952  */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
+#include "utils.h"
 
 
 double** alocaMatriz(int, int);
@@ -22,10 +24,11 @@ double** geraMatrizA(int, int);
 double* geraB(int, int);
 int getLinhaComando(int*, int*, double*, int*, double*, char*, int, char**);
 void escreveSaida(char*, int, double*, double, double, double, double);
+double maxVetor(double*, int);
 
 double** preCond_Jacobi(double**, int, int);
-double* gradienteConjugado(double**, double*, double, double, int);
-double* gradConj_comPreCondicionador(double**, double*, double**, double, double, int);
+double* gradienteConjugado(double**, double*, int, double, int, int*, double*, double*, double*, double*);
+double* gradConj_comPreCondicionador(double**, double*, double**, int, double, int, int*, double*, double*, double*);
 
 
 extern inline double generateRandomA(unsigned int, unsigned int, unsigned int);

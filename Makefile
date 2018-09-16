@@ -2,15 +2,17 @@ CC = gcc
 
 CFLAGS = -lm
 
-objs = cgSolver.o functions.o
+objs = cgSolver.o functions.o utils.o
 
 all: cgSolver
 
 cgSolver: $(objs) $(CFLAGS)
 
-cgSolver.o: cgSolver.c functions.o utils.h
+utils.o: utils.c
 
 functions.o: functions.c
+
+cgSolver.o: cgSolver.c utils.o functions.o
 
 clean:
 	-rm -f $(objs) *~

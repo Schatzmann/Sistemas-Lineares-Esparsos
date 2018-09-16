@@ -185,10 +185,14 @@ double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, d
   }
 }
 
-double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double eps, int tamVetor){
-	double *X, *z, *r, *v, *vet_aux, escalar, aux1;
+double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double *tempoResiduo, double *tempoIteracao, double *residuo){
+	double *X_new, *X_old, *z, *r, *v, *vet_aux, escalar, aux1;
 
-	X = alocaVetor(tamVetor);
+	/**contIter = 0;
+	iterX = alocaVetor(tamVetor);*/
+
+	X_new = alocaVetor(tamVetor);
+	X_old = alocaVetor(tamVetor);
 	z = alocaVetor(tamVetor);
 	vet_aux = alocaVetor(tamVetor);
 
@@ -197,26 +201,37 @@ double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double 
 
 	double aux = produtoInterno_vetor(r, r, tamVetor);
 
+	*tempoIteracao = timestamp();
+	
 	for(int itr = 0; itr < MaxIt; itr++){
+        
 		multiplica_matriz_vetor(matriz, v, tamVetor, z);
 		escalar = produtoInterno_vetor(v, z, tamVetor);
 		double s = aux / escalar;
 		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
-		soma_vetor(X, vet_aux, tamVetor, X);
+		soma_vetor(X_old, vet_aux, tamVetor, X_new);
 
-		multiplica_matriz_vetor(matriz, X, tamVetor, vet_aux);
+		*tempoResiduo = timestamp();
+
+		multiplica_matriz_vetor(matriz, X_new, tamVetor, vet_aux);
 		subtrai_vetor(vetor, vet_aux, tamVetor, r);
+
 
 		for(int i = 0; i < tamVetor; i++){
 			aux1 += r[i];
 		}
-
-		aux1 = fabs(aux1);
-
+		
 		aux1 = sqrt(aux1);
 
+		*tempoResiduo = fabs(timestamp() -  *tempoResiduo);
+
+		/**contIter++;
+		subtrai_vetor(X_new, X_old, tamVetor, vet_aux);
+		iterX[itr] = maxVetor(vet_aux, tamVetor);*/
+
 		if(aux1 < eps){
-			return(X);
+			*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
+			return(X_new);
 		}
 
 		double m = aux1/aux;
@@ -225,6 +240,9 @@ double* gradienteConjugado(double **matriz, double *vetor, double MaxIt, double 
 		multiplica_escalarVetor(v, m, tamVetor, vet_aux);
 		soma_vetor(r, vet_aux, tamVetor, v);
 	}
+
+	*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
+	return(-1);
 }
 
 double** preCond_Jacobi(double** matriz, int linhas, int colunas){
@@ -248,7 +266,7 @@ double** preCond_Jacobi(double** matriz, int linhas, int colunas){
 	return (matrizPreCond);
 }
 
-double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M, double MaxIt, double eps, int tamVetor){
+double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double* tempoResiduo, double* tempoIteracao){
 	double *X, *y, *z, *r, *v, *vet_aux, escalar, aux1;
 
   X = alocaVetor(tamVetor);
@@ -262,6 +280,8 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 	multiplica_matriz_vetor(M, r, tamVetor, y);			/* y = (M*r) */
 
 	double aux = produtoInterno_vetor(y, r, tamVetor);
+	
+	*tempoIteracao = timestamp();
 
 	for(int itr = 0; itr < MaxIt; itr++){
 		multiplica_matriz_vetor(matriz, v, tamVetor, z);
@@ -270,6 +290,8 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 
 		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
 		soma_vetor(X, vet_aux, tamVetor, X);
+
+		*tempoResiduo = timestamp();
 
 		multiplica_matriz_vetor(matriz, X, tamVetor, vet_aux);
 		subtrai_vetor(vetor, vet_aux, tamVetor, r);
@@ -282,7 +304,10 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 
 		aux1 = sqrt(aux1);
 
+		*tempoResiduo = fabs(timestamp() -  *tempoResiduo);
+
 		if(aux1 < eps){
+			*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
 			return(X);
 		}
 
@@ -294,6 +319,21 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 		multiplica_escalarVetor(v, m, tamVetor, vet_aux);
 		soma_vetor(y, vet_aux, tamVetor, v);
 	}
+
+	*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
+	return (-1);
+}
+
+double maxVetor(double* vetorA, int tamVetor){
+	double max = vetorA[0];
+
+	for (int i = 1; i < tamVetor; ++i){
+		if(vetorA[i] > max){
+			max = vetorA[i];
+		}
+	}
+
+	return max;
 }
 
 double** geraMatrizA(int k_diag, int dim){
@@ -340,13 +380,14 @@ void escreveSaida(char* arqSaida, int contIter, double* iterX, double residuo, d
 		
 		fprintf(arq, "# \n");
 
+
 		for(int i = 0; i <  contIter; i++){
 			fprintf(arq, "# iter [%d]: %.15g\n", i, iterX[i]);
 		}
 
 		fprintf(arq, "# \n");
 
-		fprintf(arq, "# residuo: %.15g\n", residuo);
+		fprintf(arq, "# residuo: %.15g\n", fabs(residuo));
 		fprintf(arq, "# Tempo PC: %.15g\n", tempo_pc);
 		fprintf(arq, "# Tempo iter: %.15g\n", tempo_itr);
 		fprintf(arq, "# Tempo residuo: %.15g\n", tempo_res);
