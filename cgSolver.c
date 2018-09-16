@@ -22,18 +22,21 @@ int main(int argc, char **argv){
 
  		tempoPC = timestamp();
 
+		iterX = alocaVetor(dim);
+
  		if (tipo == 0.0){
  			gradienteConjugado(matriz, vetor, maxIt, eps, dim, &contIter, iterX, &tempoResiduo, &tempoIteracao, &residuo);
  		} else{
  			if((tipo > 0.0)&&(tipo < 1.0)){
 				double** M = preCond_Jacobi(matriz, dim, dim);
-				gradConj_comPreCondicionador(matriz, vetor, M, maxIt, eps, dim, &contIter, iterX, &tempoResiduo, &tempoIteracao);
+				gradConj_comPreCondicionador(matriz, vetor, M, maxIt, eps, dim, &contIter, iterX, &tempoResiduo, &tempoIteracao, &residuo);
 			}
  		}
 
  		tempoPC = fabs(timestamp() - tempoPC);
 
- 		escreveSaida(arqSaida, contIter, iterX, residuo, tempoPC, tempoIteracao, tempoResiduo);
+
+	 	escreveSaida(arqSaida, contIter, iterX, residuo, tempoPC, tempoIteracao, tempoResiduo);
 
 		return(0);	
 	

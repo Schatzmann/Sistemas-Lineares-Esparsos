@@ -28,7 +28,7 @@ double maxVetor(double*, int);
 
 double** preCond_Jacobi(double**, int, int);
 double* gradienteConjugado(double**, double*, int, double, int, int*, double*, double*, double*, double*);
-double* gradConj_comPreCondicionador(double**, double*, double**, int, double, int, int*, double*, double*, double*);
+double* gradConj_comPreCondicionador(double**, double*, double**, int, double, int, int*, double*, double*, double*, double*);
 
 
 extern inline double generateRandomA(unsigned int, unsigned int, unsigned int);
