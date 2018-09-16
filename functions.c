@@ -31,6 +31,77 @@ inline double generateRandomB( unsigned int k )
 }
 
 
+int getLinhaComando(int* dim, int* diag, double* tipo, int* maxIt, double* eps, char* arqDest, int argc, char **argv){
+
+  char  *aux;
+
+  //Definição de valores default para as váriaveis.
+  *dim = -1;  
+  *diag = -1; 
+  *tipo = -1; 
+  *maxIt = -1; 
+  *eps = -1;
+
+
+	for(int i = 1; i < argc; i += 2){
+		if (strcmp(argv[i], "-n") == 0) {				
+			*dim = atoi(argv[i+1]);		
+		}
+		else if (strcmp(argv[i], "-k") == 0 ){
+				*diag =atoi(argv [i+1]);
+			}
+			else if (strcmp(argv[i], "-p") == 0) {				
+					*tipo = strtod(argv[i+1], &aux);
+				}
+				else if (strcmp(argv[i], "-i") == 0 ){
+						*maxIt = strtod(argv[i+1], &aux);
+					}
+					else if (strcmp(argv[i], "-e") == 0 ){		
+							*eps = atof(argv[i+1]);
+						}
+						else if (strcmp(argv[i], "-o") == 0 ){
+								strcpy(arqDest, argv [i+1]);
+							}
+	}	
+
+	if (*dim != -1){
+		if (*dim < 10)
+ 			printf("ERRO: o valor da dimensão do Sistema Linear tem que ser maior que 10.\n");
+ 	} else {
+		printf("ERRO: falta o parâmetro obrigatório -n (dimensão do Sistema Linear)\n");
+	 	return (-1);
+	}
+
+	if (*diag != -1){
+		if ((*diag % 2 == 0) || (*diag <= 1))
+ 			printf("ERRO: o número de diagonais da matriz A tem que ser maior que 1 e ímpar.\n");
+ 	} else {
+		printf("ERRO: falta o parâmetro obrigatório -k (número de diagonais da matriz A)\n");
+	 	return (-1);	
+	}
+
+	if (*tipo == -1){
+		printf("ERRO: falta o parâmetro obrigatório -p (pré-condicionador a ser utilizado)\n");
+	 	return (-1);	
+	}
+
+	if (*maxIt == -1){
+		printf("ERRO: falta o parâmetro obrigatório -i (número máximo de iterações a serem executadas)\n");
+	 	return (-1);	
+	}
+
+	if (! arqDest){
+		printf("ERRO: falta o parâmetro obrigatório -o (arquivo de saída)\n");
+	 	return (-1);	
+	}
+
+	if(*eps == -1){
+		*eps = 1.0e-8;
+	}	
+ 
+ return 0;
+}
+
 double** alocaMatriz(int linhas, int colunas){
 	double **matriz;
 
@@ -250,4 +321,36 @@ double* geraB(int k_diag, int dim){
 	}
 
 	return vetorB;
+}
+
+void escreveSaida(char* arqSaida, int contIter, double* iterX, double residuo, double tempo_pc, double tempo_itr, double tempo_res){
+
+	FILE *arq;
+
+	arq = fopen(arqSaida, "w");
+
+	if(!arq){
+		
+		printf("ERRO: erro ao abrir arquivo.\n");
+
+	} else {
+	
+		fprintf(arq, "# ans15  Annelyse Schatzmann\n");
+		fprintf(arq, "# ezp15  Eduardo Zimermam Pereira\n");
+		
+		fprintf(arq, "# \n");
+
+		for(int i = 0; i <  contIter; i++){
+			fprintf(arq, "# iter [%d]: %.15g\n", i, iterX[i]);
+		}
+
+		fprintf(arq, "# \n");
+
+		fprintf(arq, "# residuo: %.15g\n", residuo);
+		fprintf(arq, "# Tempo PC: %.15g\n", tempo_pc);
+		fprintf(arq, "# Tempo iter: %.15g\n", tempo_itr);
+		fprintf(arq, "# Tempo residuo: %.15g\n", tempo_res);
+
+		fclose(arq);
+	}
 }
