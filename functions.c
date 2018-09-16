@@ -188,8 +188,8 @@ double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, d
 double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double *tempoResiduo, double *tempoIteracao, double *residuo){
 	double *X_new, *X_old, *z, *r, *v, *vet_aux, escalar, aux1;
 
-	/**contIter = 0;
-	iterX = alocaVetor(tamVetor);*/
+	*contIter = 0;
+	iterX = alocaVetor(tamVetor);
 
 	X_new = alocaVetor(tamVetor);
 	X_old = alocaVetor(tamVetor);
@@ -225,9 +225,9 @@ double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps
 
 		*tempoResiduo = fabs(timestamp() -  *tempoResiduo);
 
-		/**contIter++;
+		*contIter++;
 		subtrai_vetor(X_new, X_old, tamVetor, vet_aux);
-		iterX[itr] = maxVetor(vet_aux, tamVetor);*/
+		iterX[itr] = maxVetor(vet_aux, tamVetor);
 
 		if(aux1 < eps){
 			*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
@@ -268,10 +268,13 @@ double** preCond_Jacobi(double** matriz, int linhas, int colunas){
 
 double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double* tempoResiduo, double* tempoIteracao){
 	double *X, *y, *z, *r, *v, *vet_aux, escalar, aux1;
+/*
+	*contIter = 0;
+	iterX = alocaVetor(tamVetor);*/
 
-  X = alocaVetor(tamVetor);
-  v = alocaVetor(tamVetor);
-  y = alocaVetor(tamVetor);
+  	X = alocaVetor(tamVetor);
+	v = alocaVetor(tamVetor);
+ 	y = alocaVetor(tamVetor);
 	z = alocaVetor(tamVetor);
 	vet_aux = alocaVetor(tamVetor);
 

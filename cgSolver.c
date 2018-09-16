@@ -33,7 +33,7 @@ int main(int argc, char **argv){
 
  		tempoPC = fabs(timestamp() - tempoPC);
 
- 		escreveSaida(arqSaida, dim, vetor, residuo, tempoPC, tempoIteracao, tempoResiduo);
+ 		escreveSaida(arqSaida, contIter, iterX, residuo, tempoPC, tempoIteracao, tempoResiduo);
 
 		return(0);	
 	
