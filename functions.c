@@ -1,6 +1,6 @@
 /**
  * @author  Annelyse Schatzmann           GRR20151731
- * @author  Eduardo Zimermam Pereira      GRR20152952  
+ * @author  Eduardo Zimermam Pereira      GRR20152952
  */
 
 /**
@@ -39,9 +39,9 @@ inline double generateRandomB( unsigned int k )
  * @brief Lê a linha de comando de forma dinâmica.
  * @param dim     Dimensão do Sistema Linear.
  * @param diag    Número de Diagonais da Matriz.
- * @param tipo    Pré Condicionador a ser utilizado. 
+ * @param tipo    Pré Condicionador a ser utilizado.
  * @param maxIt   Máximo de iterações a serem executadas.
- * @param eps     Erro Aproximado Absoluto Máximo. 
+ * @param eps     Erro Aproximado Absoluto Máximo.
  * @param arqDEst Caminho da solução.
  * @param argc    Número de argumentos da linha de comando.
  * @param argv    Vetor de argumentos da linha de comando.
@@ -274,6 +274,25 @@ double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, d
   }
 }
 
+/**
+ * @brief Cálculo do método do gradiente sem pré-condicionador.
+ * @param matriz        Matriz de coeficientes do sistema linear.
+ * @param vetor         Vetor b, termos independentes do sistema linear.
+ * @param MaxIt         Máxima de iterações para o método.
+ * @param eps           Erro aproximado absoluto máximo.
+ * @param tamVetor      Tamanho dos vetores do método.
+ * @param contIter      Contador para saber o tamanho do vetor iterX
+ * @param iterX         Vetor para guardar o erro de cada iteração do método.
+ * @param tempoResiduo  Tempo do cálculo do resíduo.
+ * @param tempoIteracao Tempo de cada iteração.
+ * @param residuo       Resíduo médio do método.
+ * @return Retorna as raízes do sistema linear se o método convegir, caso tenha erro, ou não
+ *         convirja nas iterações passadas como parâmetro é retornado o valor de -1.
+ *
+ * Método para o cálculo do sistema linear sem um pré-condicionantes definido.
+ * A função utiliza outras das funções declaradas neste arquivo para que possa ser feito todos os cálculos,
+ *
+ */
 double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double *tempoResiduo, double *tempoIteracao, double *residuo){
 	double *X_new, *X_old, *z, *r, *v, *vet_aux, escalar, aux1;
 
@@ -336,6 +355,15 @@ double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps
 	return(-1);
 }
 
+/**
+ * @brief Cálcula a matriz do pré-condicionador de jacobi M = D.
+ * @param matriz        Matriz de coeficientes do sistema linear.
+ * @param linhas         Número de linhas da matriz de coeficientes.
+ * @param colunas        Número de colunas da matriz de coeficientes.
+ * @return Retorna a matriz pré-condicionante de jacobi.
+ *
+ * Método apenas obtém o pré-condicionante de jacobi através da matriz de coeficientes.
+ */
 double** preCond_Jacobi(double** matriz, int linhas, int colunas){
 	double **matrizPreCond = (double**) malloc(linhas * sizeof(double**));
 
@@ -357,7 +385,25 @@ double** preCond_Jacobi(double** matriz, int linhas, int colunas){
 	return (matrizPreCond);
 }
 
-
+/**
+ * @brief Cálculo do método do gradiente com pré-condicionador.
+ * @param matriz        Matriz de coeficientes do sistema linear.
+ * @param vetor         Vetor b, termos independentes do sistema linear.
+ * @param M             Matriz pré-condicionante.
+ * @param MaxIt         Máxima de iterações para o método.
+ * @param eps           Erro aproximado absoluto máximo.
+ * @param tamVetor      Tamanho dos vetores do método.
+ * @param contIter      Contador para saber o tamanho do vetor iterX
+ * @param iterX         Vetor para guardar o erro de cada iteração do método.
+ * @param tempoResiduo  Tempo do cálculo do resíduo.
+ * @param tempoIteracao Tempo de cada iteração.
+ * @param residuo       Resíduo médio do método.
+ * @return Retorna as raízes do sistema linear se o método convergiu, caso tenha erro, ou não
+ *         convirja nas iterações passadas como parâmetro é retornado o valor de -1.
+ *
+ * Método para o cálculo do sistema linear através do pré-condicionantes passado por parâmetro.
+ * A função utiliza outras das funções declaradas neste arquivo para que possa ser feito todos os cálculos,
+ */
 double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double* tempoResiduo, double* tempoIteracao, double* residuo){
 	double *X_new, *X_old, *y, *z, *r, *v, *vet_aux, escalar, aux1;
 
@@ -432,7 +478,7 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
  * @brief Encontra o máximo valor em um vetor de elementos.
  * @param vetorA   Vetor que será verificado.
  * @param tamVetor Tamanho do vetor passado no parâmetro.
- * @return Retorna o valo máximo absoluto de um vetor de elementos.
+ * @return Retorna o valor máximo absoluto de um vetor de elementos.
  */
 double maxVetor(double* vetorA, int tamVetor){
 	double max = vetorA[0];
