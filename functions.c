@@ -36,33 +36,33 @@ int getLinhaComando(int* dim, int* diag, double* tipo, int* maxIt, double* eps, 
   char  *aux;
 
   //Definição de valores default para as váriaveis.
-  *dim = -1;  
-  *diag = -1; 
-  *tipo = -1; 
-  *maxIt = -1; 
+  *dim = -1;
+  *diag = -1;
+  *tipo = -1;
+  *maxIt = -1;
   *eps = -1;
 
 
 	for(int i = 1; i < argc; i += 2){
-		if (strcmp(argv[i], "-n") == 0) {				
-			*dim = atoi(argv[i+1]);		
+		if (strcmp(argv[i], "-n") == 0) {
+			*dim = atoi(argv[i+1]);
 		}
 		else if (strcmp(argv[i], "-k") == 0 ){
 				*diag =atoi(argv [i+1]);
 			}
-			else if (strcmp(argv[i], "-p") == 0) {				
+			else if (strcmp(argv[i], "-p") == 0) {
 					*tipo = strtod(argv[i+1], &aux);
 				}
 				else if (strcmp(argv[i], "-i") == 0 ){
 						*maxIt = strtod(argv[i+1], &aux);
 					}
-					else if (strcmp(argv[i], "-e") == 0 ){		
+					else if (strcmp(argv[i], "-e") == 0 ){
 							*eps = atof(argv[i+1]);
 						}
 						else if (strcmp(argv[i], "-o") == 0 ){
 								strcpy(arqDest, argv [i+1]);
 							}
-	}	
+	}
 
 	if (*dim != -1){
 		if (*dim < 10)
@@ -77,28 +77,28 @@ int getLinhaComando(int* dim, int* diag, double* tipo, int* maxIt, double* eps, 
  			printf("ERRO: o número de diagonais da matriz A tem que ser maior que 1 e ímpar.\n");
  	} else {
 		printf("ERRO: falta o parâmetro obrigatório -k (número de diagonais da matriz A)\n");
-	 	return (-1);	
+	 	return (-1);
 	}
 
 	if (*tipo == -1){
 		printf("ERRO: falta o parâmetro obrigatório -p (pré-condicionador a ser utilizado)\n");
-	 	return (-1);	
+	 	return (-1);
 	}
 
 	if (*maxIt == -1){
 		printf("ERRO: falta o parâmetro obrigatório -i (número máximo de iterações a serem executadas)\n");
-	 	return (-1);	
+	 	return (-1);
 	}
 
 	if (! arqDest){
 		printf("ERRO: falta o parâmetro obrigatório -o (arquivo de saída)\n");
-	 	return (-1);	
+	 	return (-1);
 	}
 
 	if(*eps == -1){
 		*eps = 1.0e-8;
-	}	
- 
+	}
+
  return 0;
 }
 
@@ -206,9 +206,9 @@ double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps
 	double aux = produtoInterno_vetor(r, r, tamVetor);
 
 	*tempoIteracao = timestamp();
-	
+
 	for(int itr = 0; itr < MaxIt; itr++){
-        
+
 		multiplica_matriz_vetor(matriz, v, tamVetor, z);
 		escalar = produtoInterno_vetor(v, z, tamVetor);
 		double s = aux / escalar;
@@ -273,9 +273,10 @@ double** preCond_Jacobi(double** matriz, int linhas, int colunas){
 	return (matrizPreCond);
 }
 
+
 double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double* tempoResiduo, double* tempoIteracao, double* residuo){
 	double *X_new, *X_old, *y, *z, *r, *v, *vet_aux, escalar, aux1;
-	
+
 	int contIterAux = 0;
 
 	X_new = alocaVetor(tamVetor);
@@ -291,7 +292,7 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 	multiplica_matriz_vetor(M, r, tamVetor, y);			/* y = (M*r) */
 
 	double aux = produtoInterno_vetor(y, r, tamVetor);
-	
+
 	*tempoIteracao = timestamp();
 
 	for(int itr = 0; itr < MaxIt; itr++){
@@ -343,6 +344,12 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 	return (-1);
 }
 
+/**
+ * @brief Encontra o máximo valor em um vetor de elementos.
+ * @param vetorA   Vetor que será verificado.
+ * @param tamVetor Tamanho do vetor passado no parâmetro.
+ * @return Retorna o valo máximo absoluto de um vetor de elementos.
+ */
 double maxVetor(double* vetorA, int tamVetor){
 	double max = vetorA[0];
 
@@ -355,6 +362,12 @@ double maxVetor(double* vetorA, int tamVetor){
 	return fabs(max);
 }
 
+/**
+ * @brief Gera a matriz dos coeficientes do sistema linear utilizando a função generateRandomA.
+ * @param k_diag  Quantidades de diagonais do sistema linear.
+ * @param dim     Dimensão do sistema linear.
+ * @return Retorna a matriz de coeficientes do sistema linear.
+ */
 double** geraMatrizA(int k_diag, int dim){
 		double** matriz = alocaMatriz(dim, dim);
 		int divK = k_diag / 2;
@@ -370,6 +383,12 @@ double** geraMatrizA(int k_diag, int dim){
 		return matriz;
 }
 
+/**
+ * @brief Gera o vetor de termos independentes do sistema linear utilizando a função generateRandomB.
+ * @param k_diag  Quantidades de diagonais do sistema linear.
+ * @param dim     Dimensão do sistema linear.
+ * @return Retorna o vetor de termos independetes do sistema linear.
+ */
 double* geraB(int k_diag, int dim){
 	double* vetorB;
 
@@ -382,6 +401,16 @@ double* geraB(int k_diag, int dim){
 	return vetorB;
 }
 
+/**
+ * @brief Escreve no arquivo passado como parâmetro a saída de dados formatada.
+ * @param arqSaida  Caminho para o arquivo que será escrito.
+ * @param contIter  Contadores das iterações para os métodos calculados.
+ * @param iterX     Vetor com os resultados parciais de cada iteração de x.
+ * @param residuo   Residuo total das iterações dos métodos.
+ * @param tempo_pc  Tempo da iteração do sistema linear e dos pré-condicionantes.
+ * @param tempo_itr Tempo médio das iterações.
+ * @param tempo_res Tempo médio do cálculo do resíduo.
+ */
 void escreveSaida(char* arqSaida, int contIter, double* iterX, double residuo, double tempo_pc, double tempo_itr, double tempo_res){
 
 	FILE *arq;
@@ -389,14 +418,14 @@ void escreveSaida(char* arqSaida, int contIter, double* iterX, double residuo, d
 	arq = fopen(arqSaida, "w");
 
 	if(!arq){
-		
+
 		printf("ERRO: erro ao abrir arquivo.\n");
 
 	} else {
-	
+
 		fprintf(arq, "# ans15  Annelyse Schatzmann\n");
 		fprintf(arq, "# ezp15  Eduardo Zimermam Pereira\n");
-		
+
 		fprintf(arq, "# \n");
 
 
