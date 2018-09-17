@@ -1,4 +1,14 @@
-#include "utils.h"
+/**
+ * @author  Annelyse Schatzmann           GRR20151731
+ * @author  Eduardo Zimermam Pereira      GRR20152952  
+*/
+
+/**
+ * @file util.c
+ * @brief Função de medição de tempo
+*/
+
+ #include "utils.h"
 
 double timestamp(void){
     struct timeval tp;
