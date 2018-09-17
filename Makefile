@@ -31,3 +31,7 @@ Doxyfile:
 
 clean:
 	-rm -f $(objs) *~ cgSolver
+	-rm -rf html 
+
+purge:
+	-rm -f $(objs) *~
