@@ -1,6 +1,12 @@
-/*Annelyse Schatzmann           GRR20151731
-Eduardo Zimermam Pereira      GRR20152952  */
-
+/**
+  *  \author Annelyse Schatzmann           GRR20151731
+  *  \author Eduardo Zimermam Pereira      GRR20152952
+  */
+  
+/**
+ * @file functions.h
+ * @brief Todas os métodos utilizados na execução do programa.
+ */
 #ifndef __FUNCTIONS__
 #define __FUNCTIONS__
 
