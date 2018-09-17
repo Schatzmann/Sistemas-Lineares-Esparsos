@@ -1,6 +1,13 @@
-/*Autores:
-Annelyse Schatzmann           GRR20151731
-Eduardo Zimermam Pereira      GRR20152952  */
+/**
+ * @author  Annelyse Schatzmann           GRR20151731
+ * @author  Eduardo Zimermam Pereira      GRR20152952  
+*/
+
+/**
+ * @file cgSolver.c
+ * @brief Programa principal.
+*/
+
 
 #include "functions.h"
 

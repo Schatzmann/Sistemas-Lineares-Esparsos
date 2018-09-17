@@ -1,7 +1,12 @@
-/*Autores:
-Annelyse Schatzmann           GRR20151731
-Eduardo Zimermam Pereira      GRR20152952  */
+/**
+ * @author  Annelyse Schatzmann           GRR20151731
+ * @author  Eduardo Zimermam Pereira      GRR20152952  
+ */
 
+/**
+ * @file functions.c
+ * @brief Todas as funções utilizadas nos métodos.
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,7 +35,20 @@ inline double generateRandomB( unsigned int k )
   return (double)(k<<2) * (double)rand() * invRandMax;
 }
 
-
+/**
+ * @brief Lê a linha de comando de forma dinâmica.
+ * @param dim     Dimensão do Sistema Linear.
+ * @param diag    Número de Diagonais da Matriz.
+ * @param tipo    Pré Condicionador a ser utilizado. 
+ * @param maxIt   Máximo de iterações a serem executadas.
+ * @param eps     Erro Aproximado Absoluto Máximo. 
+ * @param arqDEst Caminho da solução.
+ * @param argc    Número de argumentos da linha de comando.
+ * @param argv    Vetor de argumentos da linha de comando.
+ * @return Retorna os valores passados por entrada padrão.
+ *
+ * Considera todas as condições de entrada das variáveis.
+ */
 int getLinhaComando(int* dim, int* diag, double* tipo, int* maxIt, double* eps, char* arqDest, int argc, char **argv){
 
   char  *aux;
@@ -102,6 +120,12 @@ int getLinhaComando(int* dim, int* diag, double* tipo, int* maxIt, double* eps, 
  return 0;
 }
 
+/**
+ * @brief Alocação dinâmica de matriz.
+ * @param linhas   Quantidade de linhas da matriz.
+ * @param colunas  Quantidade de colunas da matriz.
+ * @return Retorna uma matriz alocada.
+ */
 double** alocaMatriz(int linhas, int colunas){
 	double **matriz;
 
@@ -120,6 +144,13 @@ double** alocaMatriz(int linhas, int colunas){
 	return matriz;
 }
 
+/**
+ * @brief Printa uma matriz.
+ * @param matriz   Matriz a ser impressa.
+ * @param linhas   Quantidade de linhas da matriz.
+ * @param colunas  Quantidade de colunas da matriz.
+ * @return Imprime na tela a matriz passada.
+ */
 void printMatriz(double** matriz, int linhas, int colunas){
 	for (int i = 0; i < linhas; i++){
 		for(int j = 0; j < colunas; j++){
@@ -129,6 +160,12 @@ void printMatriz(double** matriz, int linhas, int colunas){
 	}
 }
 
+
+/**
+ * @brief Alocação dinâmica de um Vetor.
+ * @param tamVetor  Tamanho do vetor a ser alocado.
+ * @return Retorna um vetor alocado.
+ */
 double* alocaVetor(int tamVetor){
 
 	double *vetorSaida = malloc(tamVetor * sizeof(double));
@@ -139,6 +176,13 @@ double* alocaVetor(int tamVetor){
  return(vetorSaida);
 }
 
+
+/**
+ * @brief Copia um vetor existente para um novo.
+ * @param vetorA    Vetor a ser copiado.
+ * @param tamVetor  Tamanho do vetor a ser copiado.
+ * @return Retorna um vetor copia do vetor que foi passado no parâmetro.
+ */
 double* copiaVetor(double* vetorA, int tamVetor){
 	double* aux = alocaVetor(tamVetor);
 
@@ -149,6 +193,14 @@ double* copiaVetor(double* vetorA, int tamVetor){
 	return(aux);
 }
 
+
+/**
+ * @brief Produto interno entre dois vetores.
+ * @param vetorA    Vetor a ser multiplicado.
+ * @param vetorB    Vetor a ser multiplicado.
+ * @param tamVetor  Tamanho do vetor.
+ * @return Retorna um escalar resultante do Produto Interno.
+ */
 double produtoInterno_vetor(double *vetorA, double *vetorB, int tamVetor){
  double escalar;
 
@@ -159,6 +211,14 @@ double produtoInterno_vetor(double *vetorA, double *vetorB, int tamVetor){
  return(escalar);
 }
 
+/**
+ * @brief Multiplica um vetor por um Escalar.
+ * @param vetorA     Vetor a ser multiplicado.
+ * @param escalar    Número a ser multiplicado pelo vetor.
+ * @param tamVetor   Tamanho do vetor.
+ * @param vetorSaida Vetor contendo a saída da função.
+ * @return Retorna um vetor resultante da multiplicação entre um vetor e um escalar.
+ */
 double* multiplica_escalarVetor(double *vetorA, double escalar, int tamVetor, double *vetorSaida){
 
   for(int i=0; i<tamVetor; i++){
@@ -166,6 +226,15 @@ double* multiplica_escalarVetor(double *vetorA, double escalar, int tamVetor, do
  	}
 }
 
+
+/**
+ * @brief Soma de dois vetores.
+ * @param vetorA     Vetor a ser somado.
+ * @param vetorB     Vetor a ser somado.
+ * @param tamVetor   Tamanho do vetor.
+ * @param vetorSaida Vetor contendo a saída da função.
+ * @return Retorna um vetor resultante da soma entre dois vetores.
+ */
 double* soma_vetor(double *vetorA, double *vetorB, int tamVetor, double *vetorSaida){
 
   	for(int i=0; i<tamVetor; i++){
@@ -173,6 +242,14 @@ double* soma_vetor(double *vetorA, double *vetorB, int tamVetor, double *vetorSa
  	}
 }
 
+/**
+ * @brief Subtração de dois vetores.
+ * @param vetorA     Vetor a ser subtraido.
+ * @param vetorB     Vetor a ser subtraido.
+ * @param tamVetor   Tamanho do vetor.
+ * @param vetorSaida Vetor contendo a saída da função.
+ * @return Retorna um vetor resultante da subtração entre dois vetores.
+ */
 double* subtrai_vetor(double *vetorA, double *vetorB, int tamVetor, double *vetorSaida){
 
   for(int i=0; i<tamVetor; i++){
@@ -180,7 +257,14 @@ double* subtrai_vetor(double *vetorA, double *vetorB, int tamVetor, double *veto
  	}
 }
 
-
+/**
+ * @brief Multiplicação de uma matriz com um vetor.
+ * @param matriz     matriz a ser multiplicada.
+ * @param vetorB     Vetor a ser multiplicado.
+ * @param tamVetor   Tamanho do vetor.
+ * @param vetorSaida Vetor contendo a saída da função.
+ * @return Retorna um vetor resultante da multiplicação entre uma matriz e um vetor.
+ */
 double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, double *vetorSaida){
 
   for(int i=0; i<tamVetor; i++){
