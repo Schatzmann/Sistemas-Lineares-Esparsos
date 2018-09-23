@@ -20,7 +20,7 @@
  * i,j: coordenadas do elemento a ser calculado (0<=i,j<n)
  * k: numero de diagonais da matriz A
  ***********************/
-inline double generateRandomA( unsigned int i, unsigned int j, unsigned int k){
+static inline double generateRandomA( unsigned int i, unsigned int j, unsigned int k){
   static double invRandMax = 1.0 / (double)RAND_MAX;
   return ( (i==j)?(double)(k<<1) : 1.0 )  * (double)rand() * invRandMax;
 }
@@ -29,7 +29,7 @@ inline double generateRandomA( unsigned int i, unsigned int j, unsigned int k){
  * Função que gera os termos independentes de um sistema linear k-diagonal
  * k: numero de diagonais da matriz A
  ***********************/
-inline double generateRandomB( unsigned int k )
+static inline double generateRandomB( unsigned int k )
 {
   static double invRandMax = 1.0 / (double)RAND_MAX;
   return (double)(k<<2) * (double)rand() * invRandMax;
@@ -293,7 +293,7 @@ double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, d
  * A função utiliza outras das funções declaradas neste arquivo para que possa ser feito todos os cálculos,
  *
  */
-double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double *tempoResiduo, double *tempoIteracao, double *residuo){
+double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double *tempoIteracao){
 	double *X_new, *X_old, *z, *r, *v, *vet_aux, escalar, aux1;
 
 	int contIterAux = 0;
@@ -318,24 +318,13 @@ double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps
 		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
 		soma_vetor(X_old, vet_aux, tamVetor, X_new);
 
-		*tempoResiduo = timestamp();
-
-		multiplica_matriz_vetor(matriz, X_new, tamVetor, vet_aux);
-		subtrai_vetor(vetor, vet_aux, tamVetor, r);
-
-		for(int i = 0; i < tamVetor; i++){
-			aux1 += r[i];
-		}
-
-		aux1 = sqrt(fabs(aux1));
-
-		*tempoResiduo = fabs(timestamp() -  *tempoResiduo);
-
 		contIterAux++;
 		subtrai_vetor(X_new, X_old, tamVetor, vet_aux);
 		iterX[itr] = maxVetor(vet_aux, tamVetor);
 
-		if(aux1 < eps){
+		double erro = iterX[itr]/fabs(somaElem(X_new, tamVetor));
+
+		if(erro < eps){
 			*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
 			*contIter = contIterAux;
 			*residuo = aux1;
@@ -352,7 +341,7 @@ double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps
 	*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
 	*contIter = contIterAux;
 	*residuo = aux1;
-	return(-1);
+	return(NULL);
 }
 
 /**
@@ -383,6 +372,16 @@ double** preCond_Jacobi(double** matriz, int linhas, int colunas){
 	}
 
 	return (matrizPreCond);
+}
+
+double somaElem(double* vetor, int tamVetor){
+	double somat = 0;
+
+	for (int i = 0; i < tamVetor; ++i){
+		somat += vetor[i];
+	}
+
+	return somat;
 }
 
 /**
@@ -433,26 +432,15 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
 		soma_vetor(X_old, vet_aux, tamVetor, X_new);
 
-		*tempoResiduo = timestamp();
-
-		multiplica_matriz_vetor(matriz, X_new, tamVetor, vet_aux);
-		subtrai_vetor(vetor, vet_aux, tamVetor, r);
-
 		multiplica_matriz_vetor(M, r, tamVetor, y);			/* y = (M*r) */
-
-		for(int i = 0; i < tamVetor; i++){
-			aux1 += r[i];
-		}
-
-		aux1 = sqrt(fabs(aux1));
-
-		*tempoResiduo = fabs(timestamp() -  *tempoResiduo);
 
 		contIterAux++;
 		subtrai_vetor(X_new, X_old, tamVetor, vet_aux);
 		iterX[itr] = maxVetor(vet_aux, tamVetor);
 
-		if(aux1 < eps){
+		double erro = iterX[itr]/fabs(somaElem(X_new, tamVetor));
+
+		if(erro < eps){
 			*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
 			*contIter = contIterAux;
 			*residuo = aux1;
@@ -471,7 +459,7 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 	*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
 	*contIter = contIterAux;
 	*residuo = aux1;
-	return (-1);
+	return (NULL);
 }
 
 /**
@@ -531,6 +519,24 @@ double* geraB(int k_diag, int dim){
 	return vetorB;
 }
 
+void calcResiduo(double **matriz, double *vetor, int tamVetor,  double *X_new, double *tempoResiduo, double *residuo){
+ 	double aux1;
+
+	*tempoResiduo = timestamp();
+
+	multiplica_matriz_vetor(matriz, X_new, tamVetor, vet_aux);
+	subtrai_vetor(vetor, vet_aux, tamVetor, r);
+
+	for(int i = 0; i < tamVetor; i++){
+		aux1 += r[i] * r[i];
+	}
+
+	aux1 = sqrt(fabs(aux1));
+
+	*residuo = aux1;
+	*tempoResiduo = fabs(timestamp() -  *tempoResiduo);
+}
+
 /**
  * @brief Escreve no arquivo passado como parâmetro a saída de dados formatada.
  * @param arqSaida  Caminho para o arquivo que será escrito.
@@ -540,8 +546,10 @@ double* geraB(int k_diag, int dim){
  * @param tempo_pc  Tempo da iteração do sistema linear e dos pré-condicionantes.
  * @param tempo_itr Tempo médio das iterações.
  * @param tempo_res Tempo médio do cálculo do resíduo.
+ * @param tamVetor  Tamanho do Sistema Linear
+ * @param X_new		Resultado do Sistema Linear
  */
-void escreveSaida(char* arqSaida, int contIter, double* iterX, double residuo, double tempo_pc, double tempo_itr, double tempo_res){
+void escreveSaida(char* arqSaida, int contIter, double* iterX, double residuo, double tempo_pc, double tempo_itr, double tempo_res, int tamVetor, double *X_new){
 
 	FILE *arq;
 
@@ -569,6 +577,17 @@ void escreveSaida(char* arqSaida, int contIter, double* iterX, double residuo, d
 		fprintf(arq, "# Tempo PC: %.15g\n", tempo_pc);
 		fprintf(arq, "# Tempo iter: %.15g\n", tempo_itr);
 		fprintf(arq, "# Tempo residuo: %.15g\n", tempo_res);
+
+		fprintf(arq, "# \n");
+
+		fprintf(arq, "%d\n", tamVetor);
+
+		for (int i = 0; i < (tamVetor-1); ++i){
+			fprintf(arq, "%.15g; ", X_new[i]);
+		}
+
+		fprintf(arq, "%.15g ", X_new[tamVetor - 1]);
+
 
 		fclose(arq);
 	}

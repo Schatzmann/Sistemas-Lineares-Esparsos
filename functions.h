@@ -17,7 +17,7 @@
 #include <math.h>
 #include "utils.h"
 
-
+double somaElem(double*, int);
 double** alocaMatriz(int, int);
 void printMatriz(double** , int , int);
 double* alocaVetor(int);
@@ -30,15 +30,16 @@ double* multiplica_matriz_vetor(double**, double*, int, double*);
 double** geraMatrizA(int, int);
 double* geraB(int, int);
 int getLinhaComando(int*, int*, double*, int*, double*, char*, int, char**);
-void escreveSaida(char*, int, double*, double, double, double, double);
+void escreveSaida(char*, int, double*, double, double, double, double, int, double*);
 double maxVetor(double*, int);
+void calcResiduo(double**, double*, int, double*, double*, double*);
 
 double** preCond_Jacobi(double**, int, int);
-double* gradienteConjugado(double**, double*, int, double, int, int*, double*, double*, double*, double*);
+double* gradienteConjugado(double**, double*, int, double, int, int*, double*, double*);
 double* gradConj_comPreCondicionador(double**, double*, double**, int, double, int, int*, double*, double*, double*, double*);
 
 
-extern inline double generateRandomA(unsigned int, unsigned int, unsigned int);
-extern inline double generateRandomB( unsigned int );
+// extern inline double generateRandomA(unsigned int, unsigned int, unsigned int);
+// extern inline double generateRandomB( unsigned int );
 
 #endif
