@@ -33,13 +33,12 @@ int getLinhaComando(int*, int*, double*, int*, double*, char*, int, char**);
 void escreveSaida(char*, int, double*, double, double, double, double, int, double*);
 double maxVetor(double*, int);
 void calcResiduo(double**, double*, int, double*, double*, double*);
+double** matrizTransposta(double**, int);
+void matriz_por_matriz(double**, double**, int, double**);
+
 
 double** preCond_Jacobi(double**, int, int);
 double* gradienteConjugado(double**, double*, int, double, int, int*, double*, double*);
-double* gradConj_comPreCondicionador(double**, double*, double**, int, double, int, int*, double*, double*, double*, double*);
-
-
-// extern inline double generateRandomA(unsigned int, unsigned int, unsigned int);
-// extern inline double generateRandomB( unsigned int );
+double* gradConj_comPreCondicionador(double**, double*, double**, int, double, int, int*, double*, double*);
 
 #endif

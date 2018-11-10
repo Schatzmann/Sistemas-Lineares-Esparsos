@@ -15,7 +15,7 @@ int main(int argc, char **argv){
 	srand(20182);
 
  	int dim, diag, maxIt, error, contIter;
- 	double tipo, eps, *iterX, *X_new, tempoResiduo, tempoIteracao, tempoPC, residuo;
+ 	double tipo, eps, *iterX, *X_new, tempoResiduo, tempoIteracao, tempoPC, residuo, **Mtransp, **matrizNew;
  	char arqSaida[256];
 
 
@@ -27,30 +27,35 @@ int main(int argc, char **argv){
 		double **matriz = geraMatrizA(diag, dim);
  		double *vetor = geraB(diag, dim);
 
+ 		double **matrizNew = alocaMatriz(dim, dim);
+ 		double *vetorNew = alocaVetor(dim);
 
+ 		Mtransp = matrizTransposta(matriz, dim);
+
+ 		matriz_por_matriz(Mtransp, matriz, dim, matrizNew);
+		multiplica_matriz_vetor(matrizNew, vetor, dim, vetorNew);
+		
 		iterX = alocaVetor(dim);
 		X_new = alocaVetor(dim);
 
  		if (tipo == 0.0){
  			tempoPC = timestamp();
- 			X_new = gradienteConjugado(matriz, vetor, maxIt, eps, dim, &contIter, iterX, &tempoIteracao);
+ 			X_new = gradienteConjugado(matrizNew, vetorNew, maxIt, eps, dim, &contIter, iterX, &tempoIteracao);
  			tempoPC = fabs(timestamp() - tempoPC);
  		} else{
  			if((tipo > 0.0)&&(tipo < 1.0)){
  				tempoPC = timestamp();
-				double** M = preCond_Jacobi(matriz, dim, dim);
-				X_new = gradConj_comPreCondicionador(matriz, vetor, M, maxIt, eps, dim, &contIter, iterX, &tempoIteracao);
+				double** M = preCond_Jacobi(matrizNew, dim, dim);
+				X_new = gradConj_comPreCondicionador(matrizNew, vetorNew, M, maxIt, eps, dim, &contIter, iterX, &tempoIteracao);
  				tempoPC = fabs(timestamp() - tempoPC);
 			}
  		}
 
-
  		if(X_new == NULL){
  			printf("\nERRO: O método não convergiu.\n");
  		}else{
-
  			calcResiduo(matriz, vetor, dim, X_new, &tempoResiduo, &residuo);
-	 		escreveSaida(arqSaida, contIter, iterX, residuo, tempoPC, tempoIteracao, tempoResiduo, dim, X_new);
+ 			escreveSaida(arqSaida, contIter, iterX, residuo, tempoPC, tempoIteracao, tempoResiduo, dim, X_new);
 	 	}
 
 		return(0);	

@@ -114,7 +114,7 @@ int getLinhaComando(int* dim, int* diag, double* tipo, int* maxIt, double* eps, 
 	}
 
 	if(*eps == -1){
-		*eps = 1.0e-8;
+		*eps = 1.0e-6;
 	}
 
  return 0;
@@ -176,6 +176,48 @@ double* alocaVetor(int tamVetor){
  return(vetorSaida);
 }
 
+/**
+ * @brief Transpoe a matriz original.
+ * @param matriz        Matriz de coeficientes do sistema linear.
+ * @param tamVetor     	Dimensão do sistema linear.
+ * @return Retorna uma matriz transposta.
+ */
+double** matrizTransposta(double **matriz, int tamVetor){
+ 	
+ 	double **Mtransp = alocaMatriz(tamVetor, tamVetor);
+ 	
+ 	for (int i = 0; i < tamVetor; ++i){
+ 		for (int j = 0; j < tamVetor; ++j){
+ 			Mtransp[j][i] = matriz[i][j];
+ 		}
+ 		
+ 	}
+  return(Mtransp);
+}
+
+/**
+ * @brief Multiplicação entre matrizes.
+ * @param matrizA    Matriz a ser multiplicada.
+ * @param matrizB    Matriz a ser multiplicada.
+ * @param dim        Tamanho das matrizes(dimensão).
+ * @param matrizNew  Matriz com o resultado da função.
+ * @return Retorna uma matriz nova, resultante da multiplicação de outras duas.
+ */
+void matriz_por_matriz(double **matrizA, double **matrizB, int dim, double **matrizNew){
+	double somat = 0;
+
+	for (int i = 0; i < dim; ++i){
+		for (int j = 0; j < dim; ++j){
+			for (int k= 0; k < dim; ++k){
+				somat += matrizA[i][k] * matrizB[k][j];
+			}
+			matrizNew[i][j] = somat;
+			somat = 0;
+		}
+		
+	}
+
+}
 
 /**
  * @brief Copia um vetor existente para um novo.
@@ -283,9 +325,7 @@ double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, d
  * @param tamVetor      Tamanho dos vetores do método.
  * @param contIter      Contador para saber o tamanho do vetor iterX
  * @param iterX         Vetor para guardar o erro de cada iteração do método.
- * @param tempoResiduo  Tempo do cálculo do resíduo.
  * @param tempoIteracao Tempo de cada iteração.
- * @param residuo       Resíduo médio do método.
  * @return Retorna as raízes do sistema linear se o método convegir, caso tenha erro, ou não
  *         convirja nas iterações passadas como parâmetro é retornado o valor de -1.
  *
@@ -318,16 +358,27 @@ double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps
 		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
 		soma_vetor(X_old, vet_aux, tamVetor, X_new);
 
+		multiplica_escalarVetor(z, s, tamVetor, vet_aux);
+		subtrai_vetor(r, vet_aux, tamVetor, r);
+		aux1 = produtoInterno_vetor(r, r, tamVetor);
+
 		contIterAux++;
 		subtrai_vetor(X_new, X_old, tamVetor, vet_aux);
 		iterX[itr] = maxVetor(vet_aux, tamVetor);
 
-		double erro = iterX[itr]/fabs(somaElem(X_new, tamVetor));
+		// double erro = iterX[itr]/fabs(maxVetor(X_new, tamVetor));
+
+		double erro = 0;
+
+		for (int i = 0; i < tamVetor; ++i){
+			vet_aux[i] = fabs(X_new[i] - X_old[i]) / 1 * fabs(X_new[i]);
+		}
+
+		erro = maxVetor(vet_aux, tamVetor);
 
 		if(erro < eps){
 			*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
 			*contIter = contIterAux;
-			*residuo = aux1;
 			return(X_new);
 		}
 
@@ -340,7 +391,6 @@ double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps
 
 	*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
 	*contIter = contIterAux;
-	*residuo = aux1;
 	return(NULL);
 }
 
@@ -394,16 +444,14 @@ double somaElem(double* vetor, int tamVetor){
  * @param tamVetor      Tamanho dos vetores do método.
  * @param contIter      Contador para saber o tamanho do vetor iterX
  * @param iterX         Vetor para guardar o erro de cada iteração do método.
- * @param tempoResiduo  Tempo do cálculo do resíduo.
  * @param tempoIteracao Tempo de cada iteração.
- * @param residuo       Resíduo médio do método.
  * @return Retorna as raízes do sistema linear se o método convergiu, caso tenha erro, ou não
  *         convirja nas iterações passadas como parâmetro é retornado o valor de -1.
  *
  * Método para o cálculo do sistema linear através do pré-condicionantes passado por parâmetro.
  * A função utiliza outras das funções declaradas neste arquivo para que possa ser feito todos os cálculos,
  */
-double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double* tempoResiduo, double* tempoIteracao, double* residuo){
+double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double* tempoIteracao){
 	double *X_new, *X_old, *y, *z, *r, *v, *vet_aux, escalar, aux1;
 
 	int contIterAux = 0;
@@ -432,18 +480,26 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 		multiplica_escalarVetor(v, s, tamVetor, vet_aux);
 		soma_vetor(X_old, vet_aux, tamVetor, X_new);
 
+		multiplica_escalarVetor(z, s, tamVetor, vet_aux);
+		subtrai_vetor(r, vet_aux, tamVetor, r);
+
 		multiplica_matriz_vetor(M, r, tamVetor, y);			/* y = (M*r) */
 
 		contIterAux++;
 		subtrai_vetor(X_new, X_old, tamVetor, vet_aux);
 		iterX[itr] = maxVetor(vet_aux, tamVetor);
 
-		double erro = iterX[itr]/fabs(somaElem(X_new, tamVetor));
+		double erro = 0;
+
+		for (int i = 0; i < tamVetor; ++i){
+			vet_aux[i] = fabs(X_new[i] - X_old[i]) / 1 * fabs(X_new[i]);
+		}
+
+		erro = maxVetor(vet_aux, tamVetor);
 
 		if(erro < eps){
 			*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
-			*contIter = contIterAux;
-			*residuo = aux1;
+			*contIter = contIterAux;	
 			return(X_new);
 		}
 
@@ -458,7 +514,6 @@ double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M,
 
 	*tempoIteracao = fabs(timestamp() -  *tempoIteracao);
 	*contIter = contIterAux;
-	*residuo = aux1;
 	return (NULL);
 }
 
@@ -519,8 +574,23 @@ double* geraB(int k_diag, int dim){
 	return vetorB;
 }
 
+
+/**
+ * @brief Calcula o resíduo final.
+ * @param matriz        Matriz de coeficientes do sistema linear.
+ * @param vetor         Vetor b, termos independentes do sistema linear.
+ * @param tamVetor     	Dimensão do sistema linear.
+ * @param X_new       	Raizes geradas no método.
+ * @param tempoResiduo  Tempo do cálculo do resíduo.
+ * @param residuo       Resíduo médio do método.
+ * @return Retorna o valor do resíduo médio do método considerando r = b - Ax.
+ */
 void calcResiduo(double **matriz, double *vetor, int tamVetor,  double *X_new, double *tempoResiduo, double *residuo){
  	double aux1;
+ 	double *r, *vet_aux;
+
+ 	r = alocaVetor(tamVetor);
+ 	vet_aux = alocaVetor(tamVetor);
 
 	*tempoResiduo = timestamp();
 
@@ -570,6 +640,11 @@ void escreveSaida(char* arqSaida, int contIter, double* iterX, double residuo, d
 		for(int i = 0; i <  contIter; i++){
 			fprintf(arq, "# iter [%d]: %.15g\n", i, iterX[i]);
 		}
+
+
+ 		tempo_pc = ((tempo_pc + 500) / 1000);
+ 		tempo_itr = ((tempo_itr + 500) / 1000);
+ 		tempo_res = ((tempo_res + 500) / 1000);
 
 		fprintf(arq, "# \n");
 
