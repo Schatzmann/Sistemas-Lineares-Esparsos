@@ -126,18 +126,14 @@ int getLinhaComando(int* dim, int* diag, double* tipo, int* maxIt, double* eps, 
  * @param colunas  Quantidade de colunas da matriz.
  * @return Retorna uma matriz alocada.
  */
-double** alocaMatriz(int linhas, int colunas){
-	double **matriz;
+double* alocaMatriz(int linhas, int colunas){
+	double *matriz;
 
-	matriz = (double**) malloc(linhas * sizeof(double*));
-
-	for(int i = 0; i < linhas; i++){
-			matriz[i] = (double*) malloc(colunas * sizeof(double));
-	}
+	matriz = (double*) malloc((linhas * colunas) * sizeof(double*));
 
 	for(int i = 0; i < linhas; i++){
 		for(int j = 0; j < colunas; j++){
-			matriz[i][j] = 0;
+			matriz[i * linhas * j] = 0;
 		}
 	}
 
@@ -151,10 +147,10 @@ double** alocaMatriz(int linhas, int colunas){
  * @param colunas  Quantidade de colunas da matriz.
  * @return Imprime na tela a matriz passada.
  */
-void printMatriz(double** matriz, int linhas, int colunas){
+void printMatriz(double* matriz, int linhas, int colunas){
 	for (int i = 0; i < linhas; i++){
 		for(int j = 0; j < colunas; j++){
-			printf("%.15g ", matriz[i][j]);
+			printf("%.15g ", matriz[i * linhas * j]);
 		}
 		printf("\n");
 	}
@@ -182,13 +178,13 @@ double* alocaVetor(int tamVetor){
  * @param tamVetor     	Dimensão do sistema linear.
  * @return Retorna uma matriz transposta.
  */
-double** matrizTransposta(double **matriz, int tamVetor){
+double* matrizTransposta(double *matriz, int tamVetor){
  	
- 	double **Mtransp = alocaMatriz(tamVetor, tamVetor);
+ 	double *Mtransp = alocaMatriz(tamVetor, tamVetor);
  	
  	for (int i = 0; i < tamVetor; ++i){
  		for (int j = 0; j < tamVetor; ++j){
- 			Mtransp[j][i] = matriz[i][j];
+ 			Mtransp[j * tamVetor * i] = matriz[i * tamVetor * j];
  		}
  		
  	}
@@ -203,15 +199,15 @@ double** matrizTransposta(double **matriz, int tamVetor){
  * @param matrizNew  Matriz com o resultado da função.
  * @return Retorna uma matriz nova, resultante da multiplicação de outras duas.
  */
-void matriz_por_matriz(double **matrizA, double **matrizB, int dim, double **matrizNew){
+void matriz_por_matriz(double *matrizA, double *matrizB, int dim, double *matrizNew){
 	double somat = 0;
 
 	for (int i = 0; i < dim; ++i){
 		for (int j = 0; j < dim; ++j){
 			for (int k= 0; k < dim; ++k){
-				somat += matrizA[i][k] * matrizB[k][j];
+				somat += matrizA[i * dim * j] * matrizB[i * dim * j];
 			}
-			matrizNew[i][j] = somat;
+			matrizNew[i * dim * j] = somat;
 			somat = 0;
 		}
 		
@@ -307,11 +303,11 @@ double* subtrai_vetor(double *vetorA, double *vetorB, int tamVetor, double *veto
  * @param vetorSaida Vetor contendo a saída da função.
  * @return Retorna um vetor resultante da multiplicação entre uma matriz e um vetor.
  */
-double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, double *vetorSaida){
+double* multiplica_matriz_vetor(double *matriz, double *vetorA, int tamVetor, double *vetorSaida){
 
   for(int i=0; i<tamVetor; i++){
   	for(int j=0; j<tamVetor; j++){
-  		vetorSaida[i]+= (matriz[i][j] * vetorA[j]);
+  		vetorSaida[i]+= (matriz[i * tamVetor * j] * vetorA[j]);
   	}
   }
 }
@@ -333,7 +329,7 @@ double* multiplica_matriz_vetor(double **matriz, double *vetorA, int tamVetor, d
  * A função utiliza outras das funções declaradas neste arquivo para que possa ser feito todos os cálculos,
  *
  */
-double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double *tempoIteracao){
+double* gradienteConjugado(double *matriz, double *vetor, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double *tempoIteracao){
 	double *X_new, *X_old, *z, *r, *v, *vet_aux, escalar, aux1;
 
 	int contIterAux = 0;
@@ -403,22 +399,17 @@ double* gradienteConjugado(double **matriz, double *vetor, int MaxIt, double eps
  *
  * Método apenas obtém o pré-condicionante de jacobi através da matriz de coeficientes.
  */
-double** preCond_Jacobi(double** matriz, int linhas, int colunas){
-	double **matrizPreCond = (double**) malloc(linhas * sizeof(double**));
-
-	for (int i = 0; i < linhas; i++) {
-		matrizPreCond[i] = (double*) malloc(colunas * sizeof(double*));
-	}
-
+double* preCond_Jacobi(double* matriz, int linhas, int colunas){
+	double *matrizPreCond = (double*) malloc(linhas * sizeof(double*));
 
 	for (int i = 0; i < linhas; i++) {
 		for (int j = 0; j < colunas; j++) {
-			matrizPreCond[i][j] = 0;
+			matrizPreCond[i * linhas * j] = 0;
 		}
 	}
 
 	for (int i = 0; i < linhas; i++) {
-		matrizPreCond[i][i] = matriz[i][i];
+		matrizPreCond[i * linhas * i] = matriz[i * linhas * i];
 	}
 
 	return (matrizPreCond);
@@ -451,7 +442,7 @@ double somaElem(double* vetor, int tamVetor){
  * Método para o cálculo do sistema linear através do pré-condicionantes passado por parâmetro.
  * A função utiliza outras das funções declaradas neste arquivo para que possa ser feito todos os cálculos,
  */
-double* gradConj_comPreCondicionador(double **matriz, double *vetor, double **M, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double* tempoIteracao){
+double* gradConj_comPreCondicionador(double *matriz, double *vetor, double *M, int MaxIt, double eps, int tamVetor, int *contIter, double *iterX, double* tempoIteracao){
 	double *X_new, *X_old, *y, *z, *r, *v, *vet_aux, escalar, aux1;
 
 	int contIterAux = 0;
@@ -541,14 +532,14 @@ double maxVetor(double* vetorA, int tamVetor){
  * @param dim     Dimensão do sistema linear.
  * @return Retorna a matriz de coeficientes do sistema linear.
  */
-double** geraMatrizA(int k_diag, int dim){
-		double** matriz = alocaMatriz(dim, dim);
+double* geraMatrizA(int k_diag, int dim){
+		double* matriz = alocaMatriz(dim, dim);
 		int divK = k_diag / 2;
 
 		for (int i = 0; i < dim; i++) {
 				for (int j = 0; j < dim; j++) {
 					if(fabs(i-j) <= divK){
-							matriz[i][j] = generateRandomA(i, j, k_diag);
+							matriz[i * dim * j] = generateRandomA(i, j, k_diag);
 					}
 				}
 		}
@@ -585,7 +576,7 @@ double* geraB(int k_diag, int dim){
  * @param residuo       Resíduo médio do método.
  * @return Retorna o valor do resíduo médio do método considerando r = b - Ax.
  */
-void calcResiduo(double **matriz, double *vetor, int tamVetor,  double *X_new, double *tempoResiduo, double *residuo){
+void calcResiduo(double *matriz, double *vetor, int tamVetor,  double *X_new, double *tempoResiduo, double *residuo){
  	double aux1;
  	double *r, *vet_aux;
 

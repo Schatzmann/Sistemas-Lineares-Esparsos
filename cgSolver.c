@@ -15,7 +15,7 @@ int main(int argc, char **argv){
 	srand(20182);
 
  	int dim, diag, maxIt, error, contIter;
- 	double tipo, eps, *iterX, *X_new, tempoResiduo, tempoIteracao, tempoPC, residuo, **Mtransp, **matrizNew;
+ 	double tipo, eps, *iterX, *X_new, tempoResiduo, tempoIteracao, tempoPC, residuo, *Mtransp, *matrizNew;
  	char arqSaida[256];
 
 
@@ -24,10 +24,10 @@ int main(int argc, char **argv){
 
 	if(error != -1){ 	
 
-		double **matriz = geraMatrizA(diag, dim);
+		double *matriz = geraMatrizA(diag, dim);
  		double *vetor = geraB(diag, dim);
 
- 		double **matrizNew = alocaMatriz(dim, dim);
+ 		double *matrizNew = alocaMatriz(dim, dim);
  		double *vetorNew = alocaVetor(dim);
 
  		Mtransp = matrizTransposta(matriz, dim);
@@ -45,7 +45,7 @@ int main(int argc, char **argv){
  		} else{
  			if((tipo > 0.0)&&(tipo < 1.0)){
  				tempoPC = timestamp();
-				double** M = preCond_Jacobi(matrizNew, dim, dim);
+				double* M = preCond_Jacobi(matrizNew, dim, dim);
 				X_new = gradConj_comPreCondicionador(matrizNew, vetorNew, M, maxIt, eps, dim, &contIter, iterX, &tempoIteracao);
  				tempoPC = fabs(timestamp() - tempoPC);
 			}
